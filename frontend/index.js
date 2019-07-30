@@ -6,14 +6,11 @@ document.getElementById("btn-open-or-join-room").addEventListener("click", funct
   socket.emit('joinRoom', roomId)
 });
 
-// socket.on('joinedRoom', function(data){
-//     console.log(data)
-// })
 
 socket.on('joinedShips', (data) => console.log(data))
 
 document.getElementById("btn-show-ships").addEventListener("click", function () {
-  var roomId = document.getElementById("stefan").value;
+  var roomId = document.getElementById("roomId").value;
   socket.emit('showJoinedShips', roomId)
 });
 
@@ -74,12 +71,15 @@ socket.on('offer', async function (data) {
   console.log(peer2)
   console.log(data)
   var room= data.room
+  var clientId = data.clientId
+  console.log(clientId)
   console.log(room)
   peer2.signal(data.data)
 
 
   peer2.on('signal', data => {
-    socket.emit('response',  {data:data, room: room})
+    //emitting response with offerer ID
+    socket.emit('response',  {data:data, room: room, clientId: clientId})
     console.log(data)
 
   })

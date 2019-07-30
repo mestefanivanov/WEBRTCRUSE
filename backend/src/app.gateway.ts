@@ -62,22 +62,19 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     console.log(data.data)
     console.log('******')
     console.log(`offer: ${client.id}`)
-    client.broadcast.to(data.room).emit('offer', {data:data.data , room: data.room})
+    var clients=this.roomService.showShipsFromRoom(data.room)
+    //var clientId= clients.find(x => x.clientId !== client.id);
+    //Get last joined user to emmit offers just to him
+    var user= clients.pop();
+    client.to(user.clientId).emit('offer', {data:data.data , room: data.room, clientId: client.id})
   }
 
   @SubscribeMessage('response')
-  handlePeerResponse(client: Socket, data: {data:object, room: string}) {
-    console.log(data.room)
-    console.log(`answer: ${client.id}`)
-    client.broadcast.to(data.room).emit('response', data.data)
+  handlePeerResponse(client: Socket, data: {data:object, room: string, clientId: string}) {
+    console.log(data.room);
+    console.log(`answerer: ${client.id}`);
+    console.log(`Offerer Id:${data.clientId}`)
+    client.to(data.clientId).emit('response', data.data)
   }
-
-  // @SubscribeMessage('stream')
-  // handlePeerStream(client: Socket, stream: any) {
-  //   console.log(stream)
-  //   console.log(`stream: ${client.id}`)
-  //   // client.in('2').emit('stream', stream)
-  //   client.emit('stream', stream)
-  // }
 }
 
