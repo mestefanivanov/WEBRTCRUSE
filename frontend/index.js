@@ -6,11 +6,10 @@ document.getElementById("btn-open-or-join-room").addEventListener("click", funct
   socket.emit('joinRoom', roomId)
 });
 
-
 socket.on('joinedShips', (data) => console.log(data))
 
 document.getElementById("btn-show-ships").addEventListener("click", function () {
-  var roomId = document.getElementById("roomId").value;
+  var roomId = document.getElementById("stefan").value;
   socket.emit('showJoinedShips', roomId)
 });
 
