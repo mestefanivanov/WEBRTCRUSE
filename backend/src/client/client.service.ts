@@ -4,23 +4,25 @@ import { Injectable } from '@nestjs/common';
 export class ClientService {
 
     private onlineShips: { clientId: string }[] = [];
+    private set: Set<string> = new Set();
 
-    addOnlineShip(clientId: string): string {
+    addOnlineShip(clientId: string): Set<{}> {
         const ship = { clientId: clientId };
         this.onlineShips.push(ship);
-
-        return `Ship with ${clientId} is online`
+        this.set.add(clientId);
+        return this.set;
     }
 
-    removeOnlineShip(clientId: string): string {
+    removeOnlineShip(clientId: string): {}[] {
         const indexOfShip = this.onlineShips
         .findIndex(v => v.clientId === clientId);
-        this.onlineShips.splice(indexOfShip, 1)
+        this.onlineShips.splice(indexOfShip, 1);
 
-        return 'Successfully removed';
+        return this.onlineShips;
     }
 
     showOnlineShips() {
         return this.onlineShips;
     }
 }
+

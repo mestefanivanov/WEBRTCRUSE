@@ -1,10 +1,10 @@
-import { SubscribeMessage, WebSocketGateway, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, WsResponse, WebSocketServer } from '@nestjs/websockets';
+import { SubscribeMessage, WebSocketGateway, OnGatewayInit, OnGatewayDisconnect, WsResponse, WebSocketServer } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { RoomService } from './room.service';
 
 @WebSocketGateway()
-export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
 
   constructor(private readonly roomService: RoomService) { }
   @WebSocketServer() wss: Server
@@ -21,15 +21,10 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     console.log(result)
   }
 
-  handleConnection(client: Socket, ...args: any[]) {
-    this.logger.log(`Client connected: ${client.id}`)
-    client.emit('connection', { clientId: client.id })
-  }
-
-  @SubscribeMessage('messageToServer')
-  handleMessage(client: Socket, text: string): WsResponse<string> {
-    return { event: 'msgToClient', data: text };
-  }
+  // handleConnection(client: Socket, ...args: any[]) {
+  //   this.logger.log(`Client connected: ${client.id}`)
+  //   //client.emit('connection', { clientId: client.id })
+  // }
 
   @SubscribeMessage('joinRoom')
   handleJoinRoom(client: Socket, room: string) {

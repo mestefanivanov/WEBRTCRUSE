@@ -1,5 +1,4 @@
 const socket = io('http://www.localhost:3000/')
-socket.on('connection', (data) => console.log(data))
 
 document.getElementById("btn-open-or-join-room").addEventListener("click", function () {
   var roomId = document.getElementById("room").value;
@@ -25,6 +24,11 @@ socket.on('leftRoom', (data) => console.log(data))
 //--------------------------------------
 // SECOND DEVICE 
 //--------------------------------------
+socket.on('connection', function(data){
+  console.log(data);
+})
+socket.on('disconnect', (data) => console.log(data))
+
 
 document.getElementById('sendToClient').addEventListener('click', function () {
   var clientIdWithMessage = document.getElementById('message').value
@@ -66,6 +70,15 @@ socket.on('joinedRoom', async function (data) {
 
   peer1.on('stream', stream => {
     console.log(stream)
+
+    document.getElementById('mute').addEventListener('click', function () {
+      stream.getAudioTracks()[0].enabled = false;
+    })
+
+    document.getElementById('unmute').addEventListener('click', function () {
+      stream.getAudioTracks()[0].enabled = true;
+    })
+
     // got remote video stream, now let's show it in a video tag
     var video = document.createElement('video')
     document.body.appendChild(video)
@@ -115,6 +128,15 @@ socket.on('offer', async function (data) {
 
   peer2.on('stream', stream => {
     console.log(stream)
+
+    document.getElementById('mute').addEventListener('click', function () {
+      stream.getAudioTracks()[0].enabled = false;
+    })
+
+    document.getElementById('unmute').addEventListener('click', function () {
+      stream.getAudioTracks()[0].enabled = true;
+    })
+
     // got remote video stream, now let's show it in a video tag
     var video = document.createElement('video')
     document.body.appendChild(video)

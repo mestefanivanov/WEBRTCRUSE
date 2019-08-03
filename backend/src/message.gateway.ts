@@ -17,19 +17,15 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   handleDisconnect(client: Socket) {
     this.logger.log(`Client disconnect: ${client.id}`)
     var result = this.clientService.removeOnlineShip(client.id)
+    client.emit('disconnect', result)
   }
 
   handleConnection(client: Socket, ...args: any[]) {
     this.logger.log(`Client* connected: ${client.id}`)
     var result = this.clientService.addOnlineShip(client.id)
-    client.emit('connection', { clientId: client.id })
+    console.log(result)
+    for (let item of result.values()) client.emit('connection', item);
   }
-
-
-  // @SubscribeMessage('message')
-  // handleMessage(client: Socket, payload: any): string {
-  //   return 'Hello world!';
-  // }
 
   @SubscribeMessage('message')
   handleClientMessage(client: Socket, { clientId: clientId, message: message }) {
