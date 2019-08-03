@@ -43,8 +43,10 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
   @SubscribeMessage('leaveRoom')
   handleLeaveRoom(client: Socket, room: string) {
-    console.log(room);
-    client.leave(room);
+    console.log(`room ${room}`);
+    var a =client.leave(room);
+    console.log(a);
+    console.log(client.id)
     client.emit('leftRoom', room);
     var result = this.roomService.removeShipFromRoom(client.id)
     console.log(result)

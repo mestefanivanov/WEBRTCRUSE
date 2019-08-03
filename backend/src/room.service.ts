@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class RoomService {
 
-  private joinedShips: {clientId: string, roomId: string}[]=[];
+  private joinedShips: {clientId: string, roomId: string}[] = [];
 
   addShipToRoom(clientId: string, roomId: string): string {
     const ship = {clientId: clientId, roomId: roomId};
@@ -13,7 +13,8 @@ export class RoomService {
   }
 
   removeShipFromRoom(clientId: string): string {
-    const indexOfShip = this.joinedShips.findIndex(v => v.clientId === clientId);
+    const indexOfShip = this.joinedShips
+    .findIndex(v => v.clientId === clientId);
     this.joinedShips.splice(indexOfShip, 1)
 
     return 'Success';

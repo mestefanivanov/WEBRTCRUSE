@@ -21,19 +21,44 @@ document.getElementById("btn-leave-room").addEventListener("click", function () 
 
 socket.on('leftRoom', (data) => console.log(data))
 
-const { initPeer } = require('./peer');
+
+//--------------------------------------
+// SECOND DEVICE 
+//--------------------------------------
+
+document.getElementById('sendToClient').addEventListener('click', function () {
+  var clientIdWithMessage = document.getElementById('message').value
+  var clientId = clientIdWithMessage.split(',')[0]
+  var message = clientIdWithMessage.split(',')[1]
+  console.log(clientId)
+  console.log(message)
+
+  socket.emit('message', { clientId: clientId, message: message })
+})
+
+socket.on('recieveMessage', function (message) {
+  document.getElementById('recievedMessages').textContent += message + '\n'
+})
+
 
 // ------------------------------------------
+// FIRST DEVICE
+// ------------------------------------------
+
+const { initPeer } = require('./peer');
 
 socket.on('joinedRoom', async function (data) {
   console.log(data.room)
   var room = data.room
-
   var peer1 = await initPeer(true)
+  socket.on('leftRoom', (data) => peer1.destroy())
+
+  peer1.on('error', (err) => console.log(err))
+
   console.log(peer1)
 
   peer1.on('signal', data => {
-    socket.emit('offer', {data: data, room: room})
+    socket.emit('offer', { data: data, room: room })
     console.log(data)
   })
 
@@ -62,14 +87,19 @@ socket.on('joinedRoom', async function (data) {
   peer1.on('data', function (data) {
     document.getElementById('messages').textContent += data + '\n'
   })
+
 })
 
 
 socket.on('offer', async function (data) {
   var peer2 = await initPeer(false)
+  socket.on('leftRoom', (data) => peer2.destroy())
+
+  peer2.on('error', (err) => console.log(err))
+
   console.log(peer2)
   console.log(data)
-  var room= data.room
+  var room = data.room
   var clientId = data.clientId
   console.log(clientId)
   console.log(room)
@@ -78,9 +108,8 @@ socket.on('offer', async function (data) {
 
   peer2.on('signal', data => {
     //emitting response with offerer ID
-    socket.emit('response',  {data:data, room: room, clientId: clientId})
+    socket.emit('response', { data: data, room: room, clientId: clientId })
     console.log(data)
-
   })
 
 
