@@ -2,11 +2,15 @@ import { SubscribeMessage, WebSocketGateway, OnGatewayInit, OnGatewayDisconnect,
 import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { RoomService } from './room.service';
+import { ClientService } from './client/client.service';
 
 @WebSocketGateway()
 export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
 
-  constructor(private readonly roomService: RoomService) { }
+  constructor(
+    private readonly roomService: RoomService,
+    private readonly clientService: ClientService
+    ) {}
   @WebSocketServer() wss: Server
 
   private logger: Logger = new Logger('AppGateway');
@@ -17,14 +21,24 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
 
   handleDisconnect(client: Socket) {
     this.logger.log(`Client disconnect: ${client.id}`)
-    var result = this.roomService.removeShipFromRoom(client.id)
+    var roomResult = this.roomService.removeShipFromRoom(client.id)
+    console.log(roomResult)
+    var result = this.clientService.removeOnlineShip(client.id)
     console.log(result)
+    client.emit('disconnect', result)
   }
 
   // handleConnection(client: Socket, ...args: any[]) {
   //   this.logger.log(`Client connected: ${client.id}`)
   //   //client.emit('connection', { clientId: client.id })
   // }
+
+  handleConnection(client: Socket, ...args: any[]) {
+    this.logger.log(`Client* connected: ${client.id}`)
+    var result = this.clientService.addOnlineShip(client.id)
+    console.log(result)
+    for (let item of result.values()) client.emit('connection', item);
+  }
 
   @SubscribeMessage('joinRoom')
   handleJoinRoom(client: Socket, room: string) {
@@ -72,6 +86,13 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
     console.log(`answerer: ${client.id}`);
     console.log(`Offerer Id:${data.clientId}`)
     client.to(data.clientId).emit('response', data.data)
+  }
+
+  @SubscribeMessage('message')
+  handleClientMessage(client: Socket, { clientId: clientId, message: message }) {
+    console.log(clientId)
+    console.log(message)
+    client.to(clientId).emit('recieveMessage', message)
   }
 }
 

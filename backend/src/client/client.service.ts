@@ -6,11 +6,11 @@ export class ClientService {
     private onlineShips: { clientId: string }[] = [];
     private set: Set<string> = new Set();
 
-    addOnlineShip(clientId: string): Set<{}> {
+    addOnlineShip(clientId: string) {
         const ship = { clientId: clientId };
         this.onlineShips.push(ship);
         this.set.add(clientId);
-        return this.set;
+        return this.onlineShips;
     }
 
     removeOnlineShip(clientId: string): {}[] {
