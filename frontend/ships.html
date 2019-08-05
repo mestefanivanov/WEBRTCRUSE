@@ -1,0 +1,28 @@
+<html>
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+</head>
+
+<body>
+
+    <h1>Ships here</h1>
+    <script>
+        const Http = new XMLHttpRequest();
+        const url = 'http://localhost:3000/ships';
+        Http.open("GET", url);
+        Http.send();
+
+        Http.onreadystatechange = (e) => {
+            console.log(Http.responseText)
+        }
+    </script>
+
+    <a href=http://localhost:9966/>link text</a> 
+</body> 
+
+</html>
