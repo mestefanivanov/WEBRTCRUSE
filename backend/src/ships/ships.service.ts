@@ -6,20 +6,22 @@ import { Ship } from './ship.entity';
 @Injectable()
 export class ShipsService {
 
-    
+
     constructor(
         @InjectRepository(ShipRepository)
         private shipRepository: ShipRepository,
-        ) {}
+    ) {}
 
-    // getAllShips(): Ship[]{
-    //     return this.ships;
-    // }
+    async getAllShips(): Promise<Ship[]> {
+        const ships = await this.shipRepository.getAllShips();
 
-    async getShipById(id: number): Promise<Ship>{
+        return ships;
+    }
+
+    async getShipById(id: number): Promise<Ship> {
         const found = await this.shipRepository.findOne(id);
 
-        if(!found) {
+        if (!found) {
             throw new NotFoundException(`Ship with ${id} not found`)
         }
 

@@ -6,10 +6,10 @@ import { Ship } from './ship.entity';
 export class ShipsController {
     constructor(private shipsService: ShipsService) {}
 
-    // @Get()
-    // getAllShips(): Ship[]{
-    //     return this.shipsService.getAllShips();
-    // }
+    @Get()
+    getAllShips(): Promise<Ship[]>{
+        return this.shipsService.getAllShips();
+    }
 
     @Get('/:id')
     getAllShipById(@Param('id', ParseIntPipe) id: number): Promise<Ship>{
