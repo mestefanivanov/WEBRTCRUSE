@@ -2,6 +2,7 @@ const Peer = require('simple-peer');
 const wrtc = require('wrtc')
 const getUserMedia = require('get-user-media-promise');
 
+
 const initPeer = async (initiator) => {
   const peerInfo = {
     initiator,

@@ -1,34 +1,35 @@
 const socket = io('http://www.localhost:3000/')
 
-document.getElementById("btn-open-or-join-room").addEventListener("click", function () {
-  var roomId = document.getElementById("room").value;
-  socket.emit('joinRoom', roomId)
-});
-
-socket.on('joinedShips', (data) => console.log(data))
-
-document.getElementById("btn-show-ships").addEventListener("click", function () {
-  var roomId = document.getElementById("stefan").value;
-  socket.emit('showJoinedShips', roomId)
-});
-
-document.getElementById("btn-leave-room").addEventListener("click", function () {
-  var roomId = document.getElementById("room").value;
-  console.log(roomId)
-  socket.emit('leaveRoom', roomId)
-});
-
-socket.on('leftRoom', (data) => console.log(data))
-
 
 //--------------------------------------
 // SECOND DEVICE 
 //--------------------------------------
-socket.on('connection', function(data){
-  console.log(data);
+// socket.on('connection', function (data) {
+//   var url = window.location.href
+//   var index = url.indexOf('=') 
+//   console.log(index)
+//   var shipId = url.substr(index+1)
+//   $.get(`http://localhost:3000/ships/${shipId}`)
+//   console.log(data);
+//   console.log(`**${socket.id}`)
+// })
+var url = window.location.href
+var index = url.indexOf('=')
+console.log(index)
+var shipId = url.substr(index + 1)
+$.get(`http://localhost:3000/ships/${shipId}`)
+
+socket.on('info', function (info) {
+  // console.log(info)
+  socket.emit('online', { data: info })
 })
+
 socket.on('disconnect', (data) => console.log(data))
 
+socket.on('online', function (data) {
+  console.log(data)
+  // document.getElementById('onlineShips').textContent += JSON.stringify(data) + '\n'
+})
 
 document.getElementById('sendToClient').addEventListener('click', function () {
   var clientIdWithMessage = document.getElementById('message').value
@@ -51,22 +52,36 @@ socket.on('recieveMessage', function (message) {
 
 const { initPeer } = require('./peer');
 
+document.getElementById("btn-open-or-join-room").addEventListener("click", function () {
+  var roomId = document.getElementById("room").value;
+  socket.emit('joinRoom', roomId)
+});
+
 socket.on('joinedRoom', async function (data) {
   console.log(data.room)
+  var invalid = false;
   var room = data.room
   var peer1 = await initPeer(true)
-  socket.on('leftRoom', (data) => peer1.destroy())
+
+  socket.on('leftRoom', () => peer1.destroy())
 
   peer1.on('error', (err) => console.log(err))
 
+  peer1.on('connect', function () {
+    invalid = true
+  })
+
+
   console.log(peer1)
 
-  peer1.on('signal', data => {
+  peer1.on('signal', function (data) {
     socket.emit('offer', { data: data, room: room })
     console.log(data)
   })
 
   socket.on('response', (data) => peer1.signal(data))
+
+
 
   peer1.on('stream', stream => {
     console.log(stream)
@@ -103,11 +118,10 @@ socket.on('joinedRoom', async function (data) {
 
 })
 
-
 socket.on('offer', async function (data) {
   var peer2 = await initPeer(false)
-  socket.on('leftRoom', (data) => peer2.destroy())
 
+  socket.on('leftRoom', () => peer2.destroy())
   peer2.on('error', (err) => console.log(err))
 
   console.log(peer2)
@@ -159,4 +173,19 @@ socket.on('offer', async function (data) {
     document.getElementById('messages').textContent += data + '\n'
   })
 })
+
+socket.on('joinedShips', (data) => console.log(data))
+
+document.getElementById("btn-show-ships").addEventListener("click", function () {
+  var roomId = document.getElementById("stefan").value;
+  socket.emit('showJoinedShips', roomId)
+});
+
+document.getElementById("btn-leave-room").addEventListener("click", function () {
+  var roomId = document.getElementById("room").value;
+  console.log(roomId)
+  socket.emit('leaveRoom', roomId)
+});
+
+socket.on('leftRoom', (data) => console.log(data))
 

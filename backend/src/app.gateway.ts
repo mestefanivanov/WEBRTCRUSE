@@ -10,13 +10,22 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
   constructor(
     private readonly roomService: RoomService,
     private readonly clientService: ClientService
-    ) {}
+  ) {}
   @WebSocketServer() wss: Server
 
   private logger: Logger = new Logger('AppGateway');
 
   afterInit(server: Server) {
     this.logger.log('Initialiazed')
+  }
+  //--------------------------------------
+  // SECOND DEVICE 
+  //--------------------------------------
+  handleConnection(client: Socket, ...args: any[]) {
+    this.logger.log(`Client* connected: ${client.id}`)
+    // var result = this.clientService.addOnlineShip(client.id)
+    //console.log(result)
+    client.emit('connection', client.id);
   }
 
   handleDisconnect(client: Socket) {
@@ -28,17 +37,27 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
     client.emit('disconnect', result)
   }
 
-  // handleConnection(client: Socket, ...args: any[]) {
-  //   this.logger.log(`Client connected: ${client.id}`)
-  //   //client.emit('connection', { clientId: client.id })
-  // }
-
-  handleConnection(client: Socket, ...args: any[]) {
-    this.logger.log(`Client* connected: ${client.id}`)
-    var result = this.clientService.addOnlineShip(client.id)
-    console.log(result)
-    for (let item of result.values()) client.emit('connection', item);
+  @SubscribeMessage('message')
+  handleClientMessage(client: Socket, { clientId: clientId, message: message }) {
+    console.log(clientId)
+    console.log(message)
+    client.to(clientId).emit('recieveMessage', message)
   }
+
+  @SubscribeMessage('online')
+  handleOnlineShip(client: Socket, data: { id: number, name: string, desciption: string, client: string}) {
+    console.log(data)
+    var a = data
+    a.client = client.id
+    console.log(a)
+    var onlineShips = this.clientService.addOnlineShip(a)
+    console.log(onlineShips.length)
+    client.emit('online', onlineShips)
+  }
+
+  // ------------------------------------------
+  // FIRST DEVICE
+  // ------------------------------------------
 
   @SubscribeMessage('joinRoom')
   handleJoinRoom(client: Socket, room: string) {
@@ -53,7 +72,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
   @SubscribeMessage('leaveRoom')
   handleLeaveRoom(client: Socket, room: string) {
     console.log(`room ${room}`);
-    var a =client.leave(room);
+    var a = client.leave(room);
     console.log(a);
     console.log(client.id)
     client.emit('leftRoom', room);
@@ -69,30 +88,23 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('offer')
-  handlePeerOffer(client: Socket, data: {data:object, room: string}) {
+  handlePeerOffer(client: Socket, data: { data: object, room: string }) {
     console.log(data.data)
     console.log('******')
     console.log(`offer: ${client.id}`)
-    var clients=this.roomService.showShipsFromRoom(data.room)
+    var clients = this.roomService.showShipsFromRoom(data.room)
     //var clientId= clients.find(x => x.clientId !== client.id);
     //Get last joined user to emmit offers just to him
-    var user= clients.pop();
-    client.to(user.clientId).emit('offer', {data:data.data , room: data.room, clientId: client.id})
+    var user = clients[clients.length - 1]
+    client.to(user.clientId).emit('offer', { data: data.data, room: data.room, clientId: client.id })
   }
 
   @SubscribeMessage('response')
-  handlePeerResponse(client: Socket, data: {data:object, room: string, clientId: string}) {
+  handlePeerResponse(client: Socket, data: { data: object, room: string, clientId: string }) {
     console.log(data.room);
     console.log(`answerer: ${client.id}`);
     console.log(`Offerer Id:${data.clientId}`)
     client.to(data.clientId).emit('response', data.data)
-  }
-
-  @SubscribeMessage('message')
-  handleClientMessage(client: Socket, { clientId: clientId, message: message }) {
-    console.log(clientId)
-    console.log(message)
-    client.to(clientId).emit('recieveMessage', message)
   }
 }
 
