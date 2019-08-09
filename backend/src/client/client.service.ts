@@ -5,14 +5,13 @@ import { json } from 'body-parser';
 export class ClientService {
 
     private onlineShips: { id: number, name: string, desciption: string, client: string }[] = [];
-    private set: Set<any> = new Set();
 
     addOnlineShip(onlineShip: { id: number, name: string, desciption: string, client: string }) {
         if (this.onlineShips.some(person => person.client === onlineShip.client)) {
             return this.onlineShips;
         }
         this.onlineShips.push(onlineShip);
-        // this.set.add(onlineShip)
+        
         return this.onlineShips;
     }
 

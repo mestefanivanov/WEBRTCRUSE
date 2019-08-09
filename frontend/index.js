@@ -26,9 +26,12 @@ socket.on('info', function (info) {
 
 socket.on('disconnect', (data) => console.log(data))
 
-socket.on('online', function (data) {
+socket.on('onlineShips', function (data) {
   console.log(data)
-  // document.getElementById('onlineShips').textContent += JSON.stringify(data) + '\n'
+  // a.forEach(myFunction);
+  // function myFunction(item, index) {
+  //   document.getElementById('onlineShips').textContent += index + ":" + JSON.stringify(item) + '\n'
+  // }
 })
 
 document.getElementById('sendToClient').addEventListener('click', function () {
@@ -53,13 +56,12 @@ socket.on('recieveMessage', function (message) {
 const { initPeer } = require('./peer');
 
 document.getElementById("btn-open-or-join-room").addEventListener("click", function () {
-  var roomId = document.getElementById("room").value;
+  var roomId = document.getElementById("room").value
   socket.emit('joinRoom', roomId)
 });
 
 socket.on('joinedRoom', async function (data) {
   console.log(data.room)
-  var invalid = false;
   var room = data.room
   var peer1 = await initPeer(true)
 
@@ -67,21 +69,25 @@ socket.on('joinedRoom', async function (data) {
 
   peer1.on('error', (err) => console.log(err))
 
-  peer1.on('connect', function () {
-    invalid = true
-  })
-
-
   console.log(peer1)
+  var socketId = socket.id
+  console.log(socketId)
 
-  peer1.on('signal', function (data) {
-    socket.emit('offer', { data: data, room: room })
-    console.log(data)
+  if (peer1.connected === false) {
+    peer1.on('signal', function (data) {
+      console.log(data)
+      peer1.client = socketId
+      socket.emit('offer', { data: data, room: room, peer1: peer1 })
+    })
+  }
+
+
+  socket.on('response', function(data) {
+    if(peer1.connected === false){
+      peer1.signal(data)
+      peer1.connected = true
+    }
   })
-
-  socket.on('response', (data) => peer1.signal(data))
-
-
 
   peer1.on('stream', stream => {
     console.log(stream)

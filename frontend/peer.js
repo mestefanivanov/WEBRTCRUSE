@@ -7,7 +7,8 @@ const initPeer = async (initiator) => {
   const peerInfo = {
     initiator,
     trickle: false,
-    reconnectTimer: 0,
+    reconnectTimeout: 5000,
+    connected: false,
     config: {
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
