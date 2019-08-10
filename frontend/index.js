@@ -63,9 +63,14 @@ document.getElementById("btn-open-or-join-room").addEventListener("click", funct
 socket.on('joinedRoom', async function (data) {
   console.log(data.room)
   var room = data.room
+  var Allpeers = [{}]
   var peer1 = await initPeer(true)
+  Allpeers.push(peer1);
 
-  socket.on('leftRoom', () => peer1.destroy())
+  socket.on('leftRoom', () => Allpeers.forEach(function(element) {
+    console.log(element)
+    peer1.destroy()
+  }))
 
   peer1.on('error', (err) => console.log(err))
 
@@ -73,20 +78,21 @@ socket.on('joinedRoom', async function (data) {
   var socketId = socket.id
   console.log(socketId)
 
-  if (peer1.connected === false) {
     peer1.on('signal', function (data) {
       console.log(data)
       peer1.client = socketId
+      if(peer1.connected === false){
       socket.emit('offer', { data: data, room: room, peer1: peer1 })
+      }
     })
-  }
-
 
   socket.on('response', function(data) {
     if(peer1.connected === false){
+      if (!peer1.destroyed) {
       peer1.signal(data)
       peer1.connected = true
     }
+  }
   })
 
   peer1.on('stream', stream => {
@@ -126,8 +132,15 @@ socket.on('joinedRoom', async function (data) {
 
 socket.on('offer', async function (data) {
   var peer2 = await initPeer(false)
+  var Allpeers = [{}]
+  Allpeers.push(peer2);
 
-  socket.on('leftRoom', () => peer2.destroy())
+  socket.on('leftRoom', () => Allpeers.forEach(function(element) {
+    console.log(element)
+    peer2.destroy()
+  }))
+
+  //socket.on('leftRoom', () => peer2.destroy())
   peer2.on('error', (err) => console.log(err))
 
   console.log(peer2)
@@ -136,15 +149,20 @@ socket.on('offer', async function (data) {
   var clientId = data.clientId
   console.log(clientId)
   console.log(room)
+  if(peer2.connected === false){
+    if (!peer2.destroyed) {
   peer2.signal(data.data)
-
+    }
+  }
 
   peer2.on('signal', data => {
     //emitting response with offerer ID
+    if(peer2.connected === false){
     socket.emit('response', { data: data, room: room, clientId: clientId })
+    peer2.connected = true
+    }
     console.log(data)
   })
-
 
   peer2.on('stream', stream => {
     console.log(stream)

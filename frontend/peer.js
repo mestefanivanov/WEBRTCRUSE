@@ -7,7 +7,6 @@ const initPeer = async (initiator) => {
   const peerInfo = {
     initiator,
     trickle: false,
-    reconnectTimeout: 5000,
     connected: false,
     config: {
       iceServers: [
