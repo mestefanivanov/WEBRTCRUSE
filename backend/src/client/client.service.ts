@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { json } from 'body-parser';
 
 @Injectable()
 export class ClientService {

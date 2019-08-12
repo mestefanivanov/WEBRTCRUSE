@@ -5,19 +5,19 @@ export class RoomService {
 
   private joinedShips: {clientId: string, roomId: string}[] = [];
 
-  addShipToRoom(clientId: string, roomId: string): string {
+  addShipToRoom(clientId: string, roomId: string): {}[] {
     const ship = {clientId: clientId, roomId: roomId};
     this.joinedShips.push(ship);
 
-    return 'Success';
+    return this.joinedShips;
   }
 
-  removeShipFromRoom(clientId: string): string {
+  removeShipFromRoom(clientId: string): {}[] {
     const indexOfShip = this.joinedShips
     .findIndex(v => v.clientId === clientId);
-    this.joinedShips.splice(indexOfShip, 1)
+    this.joinedShips.splice(indexOfShip, 1);
 
-    return 'Success';
+    return this.joinedShips;
   }
 
   showShipsFromRoom(roomid: string){

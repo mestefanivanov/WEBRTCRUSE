@@ -6,12 +6,13 @@ import { ClientService } from './client/client.service';
 
 @WebSocketGateway()
 export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
-  private peers: {}[]
+
   constructor(
     private readonly roomService: RoomService,
     private readonly clientService: ClientService
   ) { }
-  @WebSocketServer() wss: Server
+
+  @WebSocketServer() wss: Server;
 
   private logger: Logger = new Logger('AppGateway');
 
@@ -23,20 +24,33 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
   //--------------------------------------
   handleConnection(client: Socket, ...args: any[]) {
     this.logger.log(`Client* connected: ${client.id}`);
-    // var result = this.clientService.addOnlineShip(client.id)
-    //console.log(result)
+    //var result = this.clientService.addOnlineShip(client.id);
+    //console.log(result);
     //client.emit('connection', client.id);
+  }
+
+  @SubscribeMessage('online')
+  handleOnlineShip(client: Socket, data: { id: number, name: string, desciption: string, client: string }) {
+    //console.log(data);
+    var onlineShip = data;
+    onlineShip.client = client.id;
+    //console.log(onlineShip);
+    var onlineShips = this.clientService.addOnlineShip(onlineShip);
+    //console.log(onlineShips.length);
+
+    client.emit('onlineShips', onlineShips);
   }
 
   handleDisconnect(client: Socket) {
     this.logger.log(`Client disconnect: ${client.id}`);
     //Removing client from room FIRST DEVICE
-    var roomResult = this.roomService.removeShipFromRoom(client.id);
-    console.log(roomResult);
-    var result = this.clientService.removeOnlineShip(client.id);
-    console.log(result);
+    var shipsInRoom = this.roomService.removeShipFromRoom(client.id);
+    //console.log(shipsInRoom);
+    //Removing client from room SECOND DEVICE
+    var onlineShips = this.clientService.removeOnlineShip(client.id);
+    //console.log(onlineShips);
 
-    client.emit('disconnect', result);
+    client.emit('disconnect', onlineShips);
   }
 
   @SubscribeMessage('message')
@@ -46,30 +60,15 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
 
     client.to(clientId).emit('recieveMessage', message);
   }
-
-  @SubscribeMessage('online')
-  handleOnlineShip(client: Socket, data: { id: number, name: string, desciption: string, client: string }) {
-    console.log(data);
-    var a = data;
-    a.client = client.id;
-    console.log(a);
-    var onlineShips = this.clientService.addOnlineShip(a);
-    console.log(onlineShips.length);
-
-    client.emit('onlineShips', onlineShips);
-  }
-
   // ------------------------------------------
   // FIRST DEVICE
   // ------------------------------------------
-
   @SubscribeMessage('joinRoom')
   handleJoinRoom(client: Socket, room: string) {
-    console.log(room);
+    //console.log(room);
     client.join(room);
     var result = this.roomService.addShipToRoom(client.id, room);
-    console.log(result);
-    // client.in(room).emit('joinedRoom', { client: client.id, room: room });
+    //console.log(result);
 
     client.broadcast.to(room).emit('joinedRoom', { client: client.id, room: room });
   }
@@ -84,7 +83,27 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
 
     client.emit('leftRoom', room);
   }
+  
+  @SubscribeMessage('offer')
+  handlePeerOffer(client: Socket, data: { data: object, room: string }) {
+    var shipsInRoom = this.roomService.showShipsFromRoom(data.room);
+    //Get last joined user to emmit offers just to him
+    var lastJoinedShip = shipsInRoom[shipsInRoom.length - 1];
 
+    client.to(lastJoinedShip.clientId).emit('offer', { data: data.data, room: data.room, clientId: client.id });
+  }
+
+  @SubscribeMessage('response')
+  handlePeerResponse(client: Socket, data: { data: object, room: string, clientId: string }) {
+    console.log(data.room);
+    console.log(`answerer: ${client.id}`);
+    console.log(`Offerer Id:${data.clientId}`);
+
+    client.to(data.clientId).emit('response', data.data);
+  }
+
+  //Thats just for checking 
+  //-------------------------------
   @SubscribeMessage('showJoinedShips')
   handleJoinedShips(client: Socket, room: string) {
     var joinedShips = this.roomService.showShipsFromRoom(room);
@@ -92,37 +111,6 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
 
     client.emit('joinedShips', joinedShips);
   }
-
-  @SubscribeMessage('signal')
-  handleSignal(client: Socket, data: object) {
-    console.log('******************************')
-    console.log(data)
-  }
-
-
-  @SubscribeMessage('offer')
-  handlePeerOffer(client: Socket, data: { data: object, room: string, peer: object }) {
-    //console.log(data.peer)
-    console.log('******')
-    // console.log(`offer: ${client.id}`)
-    console.log(data.peer)
-    var clients = this.roomService.showShipsFromRoom(data.room)
-    //Get last joined user to emmit offers just to him
-    var user = clients[clients.length - 1]
-    // var a = this.peers.indexOf(data.peer)
-    // console.log('stefan')
-    // console.log(a)
-  
-      // if(data.peer,)
-      client.to(user.clientId).emit('offer', { data: data.data, room: data.room, clientId: client.id })
-  }
-
-  @SubscribeMessage('response')
-  handlePeerResponse(client: Socket, data: { data: object, room: string, clientId: string }) {
-    console.log(data.room);
-    console.log(`answerer: ${client.id}`);
-    console.log(`Offerer Id:${data.clientId}`)
-    client.to(data.clientId).emit('response', data.data)
-  }
+  //-------------------------------
 }
 
