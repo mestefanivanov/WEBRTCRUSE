@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { Client } from './client.model';
 
 @Injectable()
 export class ClientService {
 
-    private onlineShips: { id: number, name: string, desciption: string, client: string }[] = [];
+    private onlineShips: Client[] = [];
 
-    addOnlineShip(onlineShip: { id: number, name: string, desciption: string, client: string }) {
+    addOnlineShip(onlineShip: Client ) {
         if (this.onlineShips.some(person => person.client === onlineShip.client)) {
             return this.onlineShips;
         }
