@@ -31,7 +31,6 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
     var onlineShip = data;
     onlineShip.client = client.id;
     this.clientService.addOnlineShip(onlineShip);
-    // client.emit('onlineShips', onlineShips);
   }
 
   @SubscribeMessage('showOnlineShips')
