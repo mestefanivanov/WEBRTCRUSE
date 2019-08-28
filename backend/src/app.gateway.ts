@@ -30,7 +30,13 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
   handleOnlineShip(client: Socket, data: { id: number, name: string, desciption: string, client: string }) {
     var onlineShip = data;
     onlineShip.client = client.id;
-    var onlineShips = this.clientService.addOnlineShip(onlineShip);
+    this.clientService.addOnlineShip(onlineShip);
+    // client.emit('onlineShips', onlineShips);
+  }
+
+  @SubscribeMessage('showOnlineShips')
+  handleOnlineShips(client: Socket) {
+    var onlineShips = this.clientService.showOnlineShips();
     client.emit('onlineShips', onlineShips);
   }
 
@@ -72,13 +78,5 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
   @SubscribeMessage('response')
   handlePeerResponse(client: Socket, data: { data: object, room: string, clientId: string }) {
     client.to(data.clientId).emit('response', data.data);
-  }
-
-  //Thats just for checking 
-  //-------------------------------
-  @SubscribeMessage('showJoinedShips')
-  handleJoinedShips(client: Socket, room: string) {
-    var joinedShips = this.roomService.showShipsFromRoom(room);
-    client.emit('joinedShips', joinedShips);
   }
 }

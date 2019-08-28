@@ -12,10 +12,6 @@ $.get(`${URL}/ships/${shipId}`, (info) => {
   socket.emit('online', info)
 })
 
-socket.on('onlineShips', (data) => {
-  console.log(data)
-})
-
 socket.on('disconnect', (data) => console.log(data))
 
 document.getElementById('sendToClient').addEventListener('click', () => {
@@ -41,7 +37,7 @@ document.getElementById("btn-open-or-join-room").addEventListener("click", () =>
   socket.emit('joinRoom', roomId)
 });
 
-document.getElementById("btn-leave-room").addEventListener("click", function () {
+document.getElementById("btn-leave-room").addEventListener("click", () => {
   const roomId = document.getElementById("room").value
   socket.emit('leaveRoom', roomId)
 });
@@ -68,34 +64,25 @@ socket.on('joinedRoom', async (data) => {
   })
 
   peer1.on('stream', (stream) => {
-
-    document.getElementById('mute').addEventListener('click', function () {
-      stream.getAudioTracks()[0].enabled = false
-    })
-
-    document.getElementById('unmute').addEventListener('click', function () {
-      stream.getAudioTracks()[0].enabled = true
-    })
-
-    const video = document.createElement('video')
-    document.body.appendChild(video)
-
-    if ('srcObject' in video) {
-      video.srcObject = stream
-    } else {
-      video.src = window.URL.createObjectURL(stream)
-    }
-
+    const video = myFunction(stream);
     video.play()
+
+    document.getElementById('mute').addEventListener('click', () => {
+      video.volume = 0.0;
+    })
+
+    document.getElementById('unmute').addEventListener('click', () => {
+      video.volume = 1.0;
+    })
   })
   // Sending messages betweeen peers
   //-------------------------------
-  document.getElementById('send').addEventListener('click', function () {
+  document.getElementById('send').addEventListener('click', () => {
     const yourMessage = document.getElementById('yourMessage').value
     peer1.send(yourMessage)
   })
 
-  peer1.on('data', function (data) {
+  peer1.on('data', (data) => {
     document.getElementById('messages').textContent += data + '\n'
   })
 })
@@ -118,48 +105,45 @@ socket.on('offer', async (data) => {
   })
 
   peer2.on('stream', (stream) => {
-
-    document.getElementById('mute').addEventListener('click', function () {
-      stream.getAudioTracks()[0].enabled = false
-    })
-
-    document.getElementById('unmute').addEventListener('click', function () {
-      stream.getAudioTracks()[0].enabled = true
-    })
-
-    const video = document.createElement('video')
-    document.body.appendChild(video)
-
-    if ('srcObject' in video) {
-      video.srcObject = stream
-    } else {
-      video.src = window.URL.createObjectURL(stream)
-    }
-
+    const video = myFunction(stream);
     video.play()
+
+    document.getElementById('mute').addEventListener('click', () => {
+      video.volume = 0.0;
+    })
+
+    document.getElementById('unmute').addEventListener('click', () => {
+      video.volume = 1.0;
+    })
   })
 
   // Sending messages betweeen peers
   //-------------------------------
-  document.getElementById('send').addEventListener('click', function () {
+  document.getElementById('send').addEventListener('click', () => {
     const yourMessage = document.getElementById('yourMessage').value
     peer2.send(yourMessage)
   })
 
-  peer2.on('data', function (data) {
+  peer2.on('data', (data) => {
     document.getElementById('messages').textContent += data + '\n'
   })
 })
 
+socket.on('onlineShips', (data) => console.log(data))
 
-//Thats just for checking 
-//-------------------------------
-socket.on('joinedShips', (data) => console.log(data))
-
-document.getElementById("btn-show-ships").addEventListener("click", () => {
-  const roomId = document.getElementById("stefan").value;
-  socket.emit('showJoinedShips', roomId)
+document.getElementById("btn-show-online-ships").addEventListener("click", () => {
+  socket.emit('showOnlineShips', 'testing')
 });
 //-------------------------------
 
+function myFunction(stream) {
+  const video = document.createElement('video')
+  document.body.appendChild(video)
+  if ('srcObject' in video) {
+    video.srcObject = stream
+  } else {
+    video.src = window.URL.createObjectURL(stream)
+  }
 
+  return video;
+}

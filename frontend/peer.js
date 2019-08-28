@@ -19,7 +19,7 @@ const initPeer = async (initiator) => {
   };
 
   // /* Get stream data from user's browser */
-  const stream = await getUserMedia({ audio: true, video: true })
+  const stream = await getUserMedia({ audio: true, video: false })
 
   /* Attach the stream to the peerInfo object */
   peerInfo.stream = stream;

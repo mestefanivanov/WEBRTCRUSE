@@ -1,43 +1,38 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title></title>
-  </head>
-  <body>
 
-      <form>  
-          Enter No:<input type="text" id="room"/><button type='button' id="btn-open-or-join-room">Open or Join Room</button>
-      </form>  
-  
-      <button id="btn-leave-room">Leave Room</button>
-      <button id="mute">MUTE</button>
-      <button id="unmute">UNMUTE</button>
+<head>
+  <meta charset="utf-8">
+  <title></title>
+</head>
 
+<body>
 
-      <form>  
-          Enter No:<input type="text" id="stefan"/><button type='button' id="btn-show-ships">ShowUsers</button>
-      </form>  
-      
-    <label>Enter Message:</label><br/>
-    <textarea id="yourMessage"></textarea>
-    <button id="send">send</button>
-    <pre id="messages"></pre>
+  <form>
+    Enter No:<input type="text" id="room" /><button type='button' id="btn-open-or-join-room">Open or Join Room</button>
+  </form><br/>
 
+  <button id="btn-leave-room">Leave Room</button>
+  <button id="mute">MUTE</button>
+  <button id="unmute">UNMUTE</button>
 
-    <label>Enter CliendId and Message:</label><br/>
-    <textarea id="message"></textarea>
-    <button id="sendToClient">send</button>
-    <pre id="recievedMessages"></pre>
+  <button id="btn-show-online-ships">ShowOnlineShips</button><br/><br/>
+
+  <label>Enter Message:</label><br/>
+  <textarea id="yourMessage"></textarea>
+  <button id="send">send</button>
+  <pre id="messages"></pre>
 
 
-    <pre id="onlineShips"></pre>
+  <label>Enter CliendId and Message:</label><br />
+  <textarea id="message"></textarea>
+  <button id="sendToClient">send</button>
+  <pre id="recievedMessages"></pre>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/9.4.0/simplepeer.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+  <script src="bundle.js" charset="utf-8"></script>
+</body>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/9.4.0/simplepeer.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/7.2.8/adapter_no_edge_no_global.min.js"></script> -->
-    <script src="bundle.js" charset="utf-8"></script>
-  </body>
 </html>
