@@ -1,5 +1,7 @@
 const URL = 'http://localhost:3000'
 const socket = io(URL)
+var STREAM = new Array();
+
 
 //--------------------------------------
 // SECOND DEVICE 
@@ -64,14 +66,18 @@ socket.on('joinedRoom', async (data) => {
   })
 
   peer1.on('stream', (stream) => {
+    STREAM.push(stream)
     const video = myFunction(stream);
     video.play()
 
     document.getElementById('mute').addEventListener('click', () => {
-      video.volume = 0.0;
+      const streamToSend = peer1.stream.id
+      console.log(streamToSend)
+      peer1.send(streamToSend)
     })
 
     document.getElementById('unmute').addEventListener('click', () => {
+      //stream.getAudioTracks()[0].enabled = true;
       video.volume = 1.0;
     })
   })
@@ -82,7 +88,15 @@ socket.on('joinedRoom', async (data) => {
     peer1.send(yourMessage)
   })
 
-  peer1.on('data', (data) => {
+  peer1.on('data', (id) => {
+    console.log(id)
+    var streamToMute = STREAM.find(obj => {
+      return obj.id ===id
+    })
+    console.log(streamToMute)
+    console.log('******')
+    console.log(STREAM)
+    streamToMute.getAudioTracks()[0].enabled = false;
     document.getElementById('messages').textContent += data + '\n'
   })
 })
@@ -105,15 +119,23 @@ socket.on('offer', async (data) => {
   })
 
   peer2.on('stream', (stream) => {
+    console.log(stream)
+    STREAM.push(stream)
     const video = myFunction(stream);
     video.play()
 
     document.getElementById('mute').addEventListener('click', () => {
-      video.volume = 0.0;
+      const audioTracks = stream.getAudioTracks()
+      console.log(peer2)
+      console.log(audioTracks)
+      const streamToSend = peer2.stream.id
+      console.log(streamToSend)
+      peer2.send(streamToSend)
+      //stream.getAudioTracks()[0].enabled = true;
     })
 
     document.getElementById('unmute').addEventListener('click', () => {
-      video.volume = 1.0;
+      //stream.getAudioTracks()[0].enabled = true;
     })
   })
 
@@ -124,7 +146,15 @@ socket.on('offer', async (data) => {
     peer2.send(yourMessage)
   })
 
-  peer2.on('data', (data) => {
+  peer2.on('data', (id) => {
+    console.log(id)
+    var streamToMute = STREAM.find(obj => {
+      return obj.id ===id
+    })
+    console.log(streamToMute)
+    console.log('******')
+    console.log(STREAM)
+    streamToMute.getAudioTracks()[0].enabled = false;
     document.getElementById('messages').textContent += data + '\n'
   })
 })
