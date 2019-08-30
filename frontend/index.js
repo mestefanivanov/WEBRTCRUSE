@@ -1,6 +1,6 @@
 const URL = 'http://localhost:3000'
 const socket = io(URL)
-var STREAM = new Array();
+const STREAM = new Array();
 
 
 //--------------------------------------
