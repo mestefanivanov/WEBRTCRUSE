@@ -1,7 +1,12 @@
-const URL = 'http://localhost:3000'
+const URL = localStorage.getItem('url') || 'localhost:3000'
 const socket = io(URL)
 const STREAM = new Array();
 
+document.getElementById('URL').addEventListener('click', () => {
+ const locaURL = document.getElementById('URLtext').value
+ localStorage.setItem('url', locaURL)
+})
+  
 
 //--------------------------------------
 // SECOND DEVICE 
