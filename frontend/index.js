@@ -72,13 +72,7 @@ socket.on('joinedRoom', async (data) => {
 
     document.getElementById('mute').addEventListener('click', () => {
       const streamToSend = peer1.stream.id
-      console.log(streamToSend)
       peer1.send(streamToSend)
-    })
-
-    document.getElementById('unmute').addEventListener('click', () => {
-      //stream.getAudioTracks()[0].enabled = true;
-      video.volume = 1.0;
     })
   })
   // Sending messages betweeen peers
@@ -89,14 +83,15 @@ socket.on('joinedRoom', async (data) => {
   })
 
   peer1.on('data', (id) => {
-    console.log(id)
     var streamToMute = STREAM.find(obj => {
-      return obj.id ===id
+      return obj.id === id
     })
-    console.log(streamToMute)
-    console.log('******')
-    console.log(STREAM)
-    streamToMute.getAudioTracks()[0].enabled = false;
+    if (streamToMute.getAudioTracks()[0].enabled == true) {
+      streamToMute.getAudioTracks()[0].enabled = false;
+    }
+    else {
+      streamToMute.getAudioTracks()[0].enabled = true;
+    }
     document.getElementById('messages').textContent += data + '\n'
   })
 })
@@ -119,23 +114,13 @@ socket.on('offer', async (data) => {
   })
 
   peer2.on('stream', (stream) => {
-    console.log(stream)
     STREAM.push(stream)
     const video = myFunction(stream);
     video.play()
 
     document.getElementById('mute').addEventListener('click', () => {
-      const audioTracks = stream.getAudioTracks()
-      console.log(peer2)
-      console.log(audioTracks)
       const streamToSend = peer2.stream.id
-      console.log(streamToSend)
       peer2.send(streamToSend)
-      //stream.getAudioTracks()[0].enabled = true;
-    })
-
-    document.getElementById('unmute').addEventListener('click', () => {
-      //stream.getAudioTracks()[0].enabled = true;
     })
   })
 
@@ -147,14 +132,15 @@ socket.on('offer', async (data) => {
   })
 
   peer2.on('data', (id) => {
-    console.log(id)
     var streamToMute = STREAM.find(obj => {
-      return obj.id ===id
+      return obj.id === id
     })
-    console.log(streamToMute)
-    console.log('******')
-    console.log(STREAM)
-    streamToMute.getAudioTracks()[0].enabled = false;
+    if (streamToMute.getAudioTracks()[0].enabled == true) {
+      streamToMute.getAudioTracks()[0].enabled = false;
+    }
+    else {
+      streamToMute.getAudioTracks()[0].enabled = true;
+    }
     document.getElementById('messages').textContent += data + '\n'
   })
 })
