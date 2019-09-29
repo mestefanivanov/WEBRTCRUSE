@@ -3,13 +3,14 @@ import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { RoomService } from './room.service';
 import { ClientService } from './client/client.service';
+import { Client } from 'dist/client/client.model';
 
 @WebSocketGateway()
 export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
 
   constructor(
     private readonly roomService: RoomService,
-    private readonly clientService: ClientService
+    private readonly clientService: ClientService,
   ) { }
 
   @WebSocketServer() wss: Server;
@@ -27,22 +28,22 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('online')
-  handleOnlineShip(client: Socket, data: { id: number, name: string, desciption: string, client: string }) {
-    var onlineShip = data;
+  handleOnlineShip(client: Socket, data: Client) {
+    const onlineShip = data;
     onlineShip.client = client.id;
     this.clientService.addOnlineShip(onlineShip);
   }
 
   @SubscribeMessage('showOnlineShips')
   handleOnlineShips(client: Socket) {
-    var onlineShips = this.clientService.showOnlineShips();
+    const onlineShips = this.clientService.showOnlineShips();
     client.emit('onlineShips', onlineShips);
   }
 
   handleDisconnect(client: Socket) {
     this.logger.log(`Client disconnect: ${client.id}`);
     this.roomService.removeShipFromRoom(client.id);
-    var onlineShips = this.clientService.removeOnlineShip(client.id);
+    const onlineShips = this.clientService.removeOnlineShip(client.id);
     client.emit('disconnect', onlineShips);
   }
 
@@ -57,7 +58,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
   handleJoinRoom(client: Socket, room: string) {
     client.join(room);
     this.roomService.addShipToRoom(client.id, room);
-    client.broadcast.to(room).emit('joinedRoom', { client: client.id, room: room });
+    client.broadcast.to(room).emit('joinedRoom', { client: client.id, room });
   }
 
   @SubscribeMessage('leaveRoom')
@@ -66,11 +67,11 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
     this.roomService.removeShipFromRoom(client.id);
     client.emit('leftRoom', room);
   }
-  
+
   @SubscribeMessage('offer')
   handlePeerOffer(client: Socket, data: { data: object, room: string }) {
-    var shipsInRoom = this.roomService.showShipsFromRoom(data.room);
-    var lastJoinedShip = shipsInRoom[shipsInRoom.length - 1];
+    const shipsInRoom = this.roomService.showShipsFromRoom(data.room);
+    const lastJoinedShip = shipsInRoom[shipsInRoom.length - 1];
     client.to(lastJoinedShip.clientId).emit('offer', { data: data.data, room: data.room, clientId: client.id });
   }
 

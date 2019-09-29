@@ -1,6 +1,10 @@
 export interface Client {
-    id: number,
-    name: string,
-    desciption: string,
-    client: string
+    id: number;
+    MMSI: number;
+    name: string;
+    callSign: string;
+    type: string;
+    ENI: string;
+    description: string;
+    client: string;
 }

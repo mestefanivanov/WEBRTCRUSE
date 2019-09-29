@@ -11,7 +11,7 @@ export class ClientService {
             return this.onlineShips;
         }
         this.onlineShips.push(onlineShip);
-        
+
         return this.onlineShips;
     }
 

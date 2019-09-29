@@ -10,9 +10,9 @@ import { RoomService } from '../room.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ShipRepository])
+    TypeOrmModule.forFeature([ShipRepository]),
   ],
   controllers: [ShipsController],
-  providers: [AppGateway, ShipsService, ClientService,RoomService],
+  providers: [AppGateway, ShipsService, ClientService, RoomService],
 })
 export class ShipsModule {}

@@ -12,7 +12,7 @@ export class ShipsController {
     }
 
     @Get('/:id')
-    getAllShipById(@Param('id', ParseIntPipe) id: number): Promise<Ship>{
+    getAllShipById(@Param('id', ParseIntPipe) id: number): Promise<Ship> {
         return this.shipsService.getShipById(id);
     }
 }
