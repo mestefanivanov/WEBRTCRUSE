@@ -3,10 +3,10 @@ const socket = io(URL)
 const STREAM = new Array();
 
 document.getElementById('URL').addEventListener('click', () => {
- const locaURL = document.getElementById('URLtext').value
- localStorage.setItem('url', locaURL)
+  const locaURL = document.getElementById('URLtext').value
+  localStorage.setItem('url', locaURL)
 })
-  
+
 
 //--------------------------------------
 // SECOND DEVICE 
@@ -87,17 +87,16 @@ socket.on('joinedRoom', async (data) => {
     peer1.send(yourMessage)
   })
 
-  peer1.on('data', (id) => {
-    var streamToMute = STREAM.find(obj => {
-      return obj.id === id
+  peer1.on('data', (data) => {
+    const streamToMute = STREAM.find(obj => {
+      return obj.id === data
     })
-    if (streamToMute.getAudioTracks()[0].enabled == true) {
-      streamToMute.getAudioTracks()[0].enabled = false;
+
+    if (streamToMute) {
+      streamToMute.getAudioTracks()[0].enabled = !streamToMute.getAudioTracks()[0].enabled;
+    } else {
+      document.getElementById('messages').textContent += data + '\n'
     }
-    else {
-      streamToMute.getAudioTracks()[0].enabled = true;
-    }
-    document.getElementById('messages').textContent += data + '\n'
   })
 })
 
@@ -136,17 +135,16 @@ socket.on('offer', async (data) => {
     peer2.send(yourMessage)
   })
 
-  peer2.on('data', (id) => {
-    var streamToMute = STREAM.find(obj => {
-      return obj.id === id
+  peer2.on('data', (data) => {
+    const streamToMute = STREAM.find(obj => {
+      return obj.id === data
     })
-    if (streamToMute.getAudioTracks()[0].enabled == true) {
-      streamToMute.getAudioTracks()[0].enabled = false;
+
+    if (streamToMute) {
+      streamToMute.getAudioTracks()[0].enabled = !streamToMute.getAudioTracks()[0].enabled;
+    } else {
+      document.getElementById('messages').textContent += data + '\n'
     }
-    else {
-      streamToMute.getAudioTracks()[0].enabled = true;
-    }
-    document.getElementById('messages').textContent += data + '\n'
   })
 })
 
