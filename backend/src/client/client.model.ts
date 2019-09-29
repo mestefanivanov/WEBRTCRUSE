@@ -6,5 +6,6 @@ export interface Client {
     type: string;
     ENI: string;
     description: string;
+    isAvailable: boolean;
     client: string;
 }

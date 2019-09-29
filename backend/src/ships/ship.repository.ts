@@ -4,7 +4,7 @@ import { Ship } from './ship.entity';
 @EntityRepository(Ship)
 export class ShipRepository extends Repository<Ship> {
 
-    async getAllShips(){
+    async getAllShips() {
         const query = this.createQueryBuilder('ship');
 
         const ships = await query.getMany();

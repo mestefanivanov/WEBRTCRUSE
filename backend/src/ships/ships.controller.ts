@@ -7,7 +7,7 @@ export class ShipsController {
     constructor(private shipsService: ShipsService) {}
 
     @Get()
-    getAllShips(): Promise<Ship[]>{
+    getAllShips(): Promise<Ship[]> {
         return this.shipsService.getAllShips();
     }
 

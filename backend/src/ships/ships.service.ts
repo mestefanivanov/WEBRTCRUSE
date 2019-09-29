@@ -21,7 +21,7 @@ export class ShipsService {
         const found = await this.shipRepository.findOne(id);
 
         if (!found) {
-            throw new NotFoundException(`Ship with ${id} not found`)
+            throw new NotFoundException(`Ship with ${id} not found`);
         }
 
         return found;

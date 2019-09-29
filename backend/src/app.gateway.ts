@@ -3,7 +3,7 @@ import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { RoomService } from './room.service';
 import { ClientService } from './client/client.service';
-import { Client } from 'dist/client/client.model';
+import { Client } from './client/client.model';
 
 @WebSocketGateway()
 export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
@@ -20,15 +20,16 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
   afterInit(server: Server) {
     this.logger.log('Initialiazed');
   }
-  //--------------------------------------
-  // SECOND DEVICE 
-  //--------------------------------------
+   // --------------------------------------
+   // SECOND DEVICE
+   // --------------------------------------
   handleConnection(client: Socket, ...args: any[]) {
     this.logger.log(`Client* connected: ${client.id}`);
   }
 
   @SubscribeMessage('online')
-  handleOnlineShip(client: Socket, data: Client) {
+  handleOnlineShip(
+    client: Socket, data: Client) {
     const onlineShip = data;
     onlineShip.client = client.id;
     this.clientService.addOnlineShip(onlineShip);

@@ -22,4 +22,7 @@ export class Ship extends BaseEntity {
 
     @Column()
     description: string;
+
+    @Column()
+    isAvailable: boolean;
 }
