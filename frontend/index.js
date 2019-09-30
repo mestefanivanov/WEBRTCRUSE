@@ -15,11 +15,11 @@ const url = window.location.href
 const index = url.indexOf('=')
 const shipId = url.substr(index + 1)
 
-$.get(`${URL}/ships/${shipId}`, (info) => {
-  socket.emit('online', info)
-})
- 
+// $.get(`${URL}/ships/${shipId}`, (info) => {
+//   socket.emit('online', info)
+// })
 
+//////////////////
  let dropdown = $('#locality-dropdown');
 
  dropdown.empty();
@@ -28,19 +28,20 @@ $.get(`${URL}/ships/${shipId}`, (info) => {
  dropdown.prop('selectedIndex', 0);
  
  // Populate dropdown with list of provinces
- $.getJSON(`${URL}/ships?isAvailable=false`, (data) => {
-   $.each(data, function (key, entry) {
+ $.getJSON(`${URL}/ships?isAvailable=true`, (data) => {
+   $.each(data, (key, entry) => {
      dropdown.append($('<option></option>').attr('value', entry.id).text(entry.name));
    })
  });
 
-
- $("#locality-dropdown").change(function() {
-
+ $("#locality-dropdown").change( () => {
   var selectedVal = $("#locality-dropdown option:selected").val();
-  console.log(selectedVal)
-
+  $.get(`${URL}/ships/${selectedVal}`, (info) => {
+    socket.emit('online', info)
+  })
 });
+
+////////////////////////////
 
 socket.on('disconnect', (data) => console.log(data))
 
