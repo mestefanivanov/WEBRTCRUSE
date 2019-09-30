@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { ShipRepository } from './ship.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Ship } from './ship.entity';
+import { GetShipsFilterDto } from './dto/get-ships-fiter.dto';
 
 @Injectable()
 export class ShipsService {
@@ -11,8 +12,8 @@ export class ShipsService {
         private shipRepository: ShipRepository,
     ) {}
 
-    async getAllShips(): Promise<Ship[]> {
-        const ships = await this.shipRepository.getAllShips();
+    async getAllShips(filterDto: GetShipsFilterDto): Promise<Ship[]> {
+        const ships = await this.shipRepository.getAllShips(filterDto);
 
         return ships;
     }
@@ -25,5 +26,13 @@ export class ShipsService {
         }
 
         return found;
+    }
+
+    async updateShip(id: number, isAvailable: boolean): Promise<Ship> {
+       const ship = await this.getShipById(id);
+       ship.isAvailable = isAvailable;
+       ship.save();
+
+       return ship;
     }
 }
