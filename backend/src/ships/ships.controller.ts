@@ -2,6 +2,7 @@ import { Controller, Get, Param, ParseIntPipe, Query, ValidationPipe, Patch, Bod
 import { ShipsService } from './ships.service';
 import { Ship } from './ship.entity';
 import { GetShipsFilterDto } from './dto/get-ships-fiter.dto';
+import { ShipStatus } from './ship-status';
 
 @Controller('ships')
 export class ShipsController {
@@ -17,10 +18,10 @@ export class ShipsController {
         return this.shipsService.getShipById(id);
     }
 
-    @Put('/:id/isAvailable')
+    @Put('/:id/status')
     updateShip(
         @Param('id', ParseIntPipe) id: number,
-        @Body('IsAvailable') IsAvailable: boolean,
+        @Body('status') IsAvailable: ShipStatus,
         ): Promise<Ship> {
         return this.shipsService.updateShip(id, IsAvailable);
     }

@@ -3,6 +3,7 @@ import { ShipRepository } from './ship.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Ship } from './ship.entity';
 import { GetShipsFilterDto } from './dto/get-ships-fiter.dto';
+import { ShipStatus } from './ship-status';
 
 @Injectable()
 export class ShipsService {
@@ -10,7 +11,7 @@ export class ShipsService {
     constructor(
         @InjectRepository(ShipRepository)
         private shipRepository: ShipRepository,
-    ) {}
+    ) { }
 
     async getAllShips(filterDto: GetShipsFilterDto): Promise<Ship[]> {
         const ships = await this.shipRepository.getAllShips(filterDto);
@@ -28,11 +29,10 @@ export class ShipsService {
         return found;
     }
 
-    async updateShip(id: number, isAvailable: boolean): Promise<Ship> {
-       const ship = await this.getShipById(id);
-       ship.isAvailable = isAvailable;
-       ship.save();
-
-       return ship;
+    async updateShip(id: number, status: ShipStatus): Promise<Ship> {
+        const ship = await this.getShipById(id);
+        ship.status = status;
+        await ship.save();
+        return ship;
     }
 }

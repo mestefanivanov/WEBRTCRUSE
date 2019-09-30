@@ -1,3 +1,5 @@
+import { ShipStatus } from 'src/ships/ship-status';
+
 export interface Client {
     id: number;
     MMSI: number;
@@ -6,6 +8,6 @@ export interface Client {
     type: string;
     ENI: string;
     description: string;
-    isAvailable: boolean;
+    isAvailable: ShipStatus;
     client: string;
 }

@@ -20,27 +20,37 @@ const shipId = url.substr(index + 1)
 // })
 
 //////////////////
- let dropdown = $('#locality-dropdown');
+let dropdown = $('#locality-dropdown');
 
- dropdown.empty();
- 
- dropdown.append('<option selected="true" disabled>CHOOSE SHIP</option>');
- dropdown.prop('selectedIndex', 0);
- 
- // Populate dropdown with list of provinces
- $.getJSON(`${URL}/ships?isAvailable=true`, (data) => {
-   $.each(data, (key, entry) => {
-     dropdown.append($('<option></option>').attr('value', entry.id).text(entry.name));
-   })
- });
+dropdown.empty();
 
- $("#locality-dropdown").change( () => {
-  var selectedVal = $("#locality-dropdown option:selected").val();
-  $.get(`${URL}/ships/${selectedVal}`, (info) => {
-    socket.emit('online', info)
+dropdown.append('<option selected="true" disabled>CHOOSE SHIP</option>');
+dropdown.prop('selectedIndex', 0);
+
+// Populate dropdown with list of provinces
+$.getJSON(`${URL}/ships?isAvailable=true`, (data) => {
+  $.each(data, (key, entry) => {
+    dropdown.append($('<option></option>').attr('value', entry.id).text(entry.name));
   })
 });
 
+$("#locality-dropdown").change(() => {
+  var selectedVal = $("#locality-dropdown option:selected").val();
+  $.get(`${URL}/ships/${selectedVal}`, (info) => {
+    let data = { "IsAvailable": "true" }
+    $.ajax({
+      url: `${URL}/ships/2/status`,
+      type: 'PUT',
+      data: JSON.stringify({
+        "status": 'TAKEN'
+      }),
+      headers: {
+        'X-CSRF-TOKEN': localStorage.getItem("XSRF.Token")
+      }
+    });
+    socket.emit('online', info)
+  })
+})
 ////////////////////////////
 
 socket.on('disconnect', (data) => console.log(data))

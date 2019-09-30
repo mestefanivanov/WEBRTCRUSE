@@ -1,3 +1,5 @@
+import { ShipStatus } from '../ship-status';
+
 export class GetShipsFilterDto {
-    isAvailable: boolean;
+    status: ShipStatus;
 }

@@ -21,7 +21,7 @@ export class RoomService {
   }
 
   showShipsFromRoom(roomid: string){
-    var filteredArray =  this.joinedShips.filter(function(joinedShips) {
+    var filteredArray =  this.joinedShips.filter((joinedShips) => {
       return joinedShips.roomId === roomid;
     });
 

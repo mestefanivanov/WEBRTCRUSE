@@ -1,4 +1,5 @@
 import { BaseEntity, Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { ShipStatus } from './ship-status';
 
 @Entity()
 export class Ship extends BaseEntity {
@@ -24,5 +25,5 @@ export class Ship extends BaseEntity {
     description: string;
 
     @Column()
-    isAvailable: boolean;
+    status: ShipStatus;
 }

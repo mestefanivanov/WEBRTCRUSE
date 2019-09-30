@@ -6,11 +6,11 @@ import { GetShipsFilterDto } from './dto/get-ships-fiter.dto';
 export class ShipRepository extends Repository<Ship> {
 
     async getAllShips(filterDto: GetShipsFilterDto) {
-        const { isAvailable } = filterDto;
+        const { status } = filterDto;
         const query = this.createQueryBuilder('ship');
 
-        if (isAvailable) {
-            query.where('ship.isAvailable = :isAvailable', {isAvailable});
+        if (status) {
+            query.where('ship.status = :status', { status });
         }
 
         const ships = await query.getMany();
