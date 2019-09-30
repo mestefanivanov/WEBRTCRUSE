@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe, Query, ValidationPipe, Patch, Body } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query, ValidationPipe, Patch, Body, Put } from '@nestjs/common';
 import { ShipsService } from './ships.service';
 import { Ship } from './ship.entity';
 import { GetShipsFilterDto } from './dto/get-ships-fiter.dto';
@@ -17,7 +17,7 @@ export class ShipsController {
         return this.shipsService.getShipById(id);
     }
 
-    @Patch('/:id/isAvailable')
+    @Put('/:id/isAvailable')
     updateShip(
         @Param('id', ParseIntPipe) id: number,
         @Body('IsAvailable') IsAvailable: boolean,
