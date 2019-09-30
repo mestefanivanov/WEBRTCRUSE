@@ -7,33 +7,30 @@
 </head>
 
 <body>
-    <form>
-        Enter URL:<input type="text" id="URLtext" /><button type='button' id="URL">Enter URL</button>
-      </form><br/>
-      <form>
-          <label>Select Ship:</label>
-          <select>
-            <option value="books">Books</option>
-            <option value="html">HTML</option>
-            <option value="css">CSS</option>
-            <option value="php">PHP</option>
-            <option value="js">JavaScript</option>
-          </select>
-        </form>
-        <hr>
+  <form>
+    Enter URL:<input type="text" id="URLtext" /><button type='button' id="URL">Enter URL</button>
+  </form>
+  <hr>
+    <label>Select Ship:</label>
+    <select
+     id="locality-dropdown" 
+     name="locality">
+    </select>
+  <hr>
   <form>
     Enter No:<input type="text" id="room" /><button type='button' id="btn-open-or-join-room">Open or Join Room</button>
-  </form><br/>
+  </form><br />
 
   <button id="btn-leave-room">Leave Room</button>
   <button id="mute">MUTE/UNMUTE</button>
-  <button id="btn-show-online-ships">ShowOnlineShips</button><br/><br/>
+  <button id="btn-show-online-ships">ShowOnlineShips</button><br /><br />
 
-  <label>Enter Message:</label><br/>
+  <label>Enter Message:</label><br />
   <textarea id="yourMessage"></textarea>
   <button id="send">send</button>
   <pre id="messages"></pre>
 
+  <hr>
 
   <label>Enter CliendId and Message:</label><br />
   <textarea id="message"></textarea>

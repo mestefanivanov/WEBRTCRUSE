@@ -18,6 +18,29 @@ const shipId = url.substr(index + 1)
 $.get(`${URL}/ships/${shipId}`, (info) => {
   socket.emit('online', info)
 })
+ 
+
+ let dropdown = $('#locality-dropdown');
+
+ dropdown.empty();
+ 
+ dropdown.append('<option selected="true" disabled>CHOOSE SHIP</option>');
+ dropdown.prop('selectedIndex', 0);
+ 
+ // Populate dropdown with list of provinces
+ $.getJSON(`${URL}/ships?isAvailable=false`, (data) => {
+   $.each(data, function (key, entry) {
+     dropdown.append($('<option></option>').attr('value', entry.id).text(entry.name));
+   })
+ });
+
+
+ $("#locality-dropdown").change(function() {
+
+  var selectedVal = $("#locality-dropdown option:selected").val();
+  console.log(selectedVal)
+
+});
 
 socket.on('disconnect', (data) => console.log(data))
 
