@@ -27,6 +27,41 @@ dropdown.empty();
 dropdown.append('<option selected="true" disabled>CHOOSE SHIP</option>');
 dropdown.prop('selectedIndex', 0);
 
+document.getElementById('stefan').addEventListener('click', () => {
+  // $.ajax({
+  //   url: `${URL}/ships/3/status`,
+  //   type: 'PUT',
+  //   data: JSON.stringify({
+  //     "status": 'TAKEN',
+  //     headers: {
+  //       'Content-Type': 'application/x-www-form-urlencoded'
+  //     }
+  //   }),
+  // });
+
+  jQuery.each( [ "put", "delete" ], function( i, method ) {
+    jQuery[ method ] = function( url, data, callback, type ) {
+      if ( jQuery.isFunction( data ) ) {
+        type = type || callback;
+        callback = data;
+        data = undefined;
+      }
+  
+      return jQuery.ajax({
+        url: url,
+        type: method,
+        dataType: type,
+        data: data,
+        success: callback
+      });
+    };
+  });
+  $.put(`${URL}/ships/3/status`, {status:'AVAILABLE'}, function(result){
+   console.log(result);
+})
+})
+
+
 // Populate dropdown with list of provinces
 $.getJSON(`${URL}/ships?status=AVAILABLE`, (data) => {
   $.each(data, (key, entry) => {
@@ -37,13 +72,6 @@ $.getJSON(`${URL}/ships?status=AVAILABLE`, (data) => {
 $("#locality-dropdown").change(() => {
   var selectedVal = $("#locality-dropdown option:selected").val();
   $.get(`${URL}/ships/${selectedVal}`, (info) => {
-    $.ajax({
-      url: `${URL}/ships/2/status`,
-      type: 'PUT',
-      data: JSON.stringify({
-        "status": 'TAKEN'
-      }),
-    });
     socket.emit('online', info)
   })
 })
