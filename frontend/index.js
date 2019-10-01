@@ -28,7 +28,7 @@ dropdown.append('<option selected="true" disabled>CHOOSE SHIP</option>');
 dropdown.prop('selectedIndex', 0);
 
 // Populate dropdown with list of provinces
-$.getJSON(`${URL}/ships?isAvailable=true`, (data) => {
+$.getJSON(`${URL}/ships?status=AVAILABLE`, (data) => {
   $.each(data, (key, entry) => {
     dropdown.append($('<option></option>').attr('value', entry.id).text(entry.name));
   })
@@ -37,16 +37,12 @@ $.getJSON(`${URL}/ships?isAvailable=true`, (data) => {
 $("#locality-dropdown").change(() => {
   var selectedVal = $("#locality-dropdown option:selected").val();
   $.get(`${URL}/ships/${selectedVal}`, (info) => {
-    let data = { "IsAvailable": "true" }
     $.ajax({
       url: `${URL}/ships/2/status`,
       type: 'PUT',
       data: JSON.stringify({
         "status": 'TAKEN'
       }),
-      headers: {
-        'X-CSRF-TOKEN': localStorage.getItem("XSRF.Token")
-      }
     });
     socket.emit('online', info)
   })
