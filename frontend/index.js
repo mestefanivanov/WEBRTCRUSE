@@ -101,7 +101,6 @@ socket.on('noOnlineShips', (msg) => {
           data: JSON.stringify(data), // access in body
         }).done(function () {
           console.log('SUCCESS');
-          socket.emit('freeShip', 'testing')
         }).fail(function (msg) {
           console.log('FAIL');
         }).always(function (msg) {
@@ -126,14 +125,14 @@ socket.on('disconnect', (ship) => {
     url: `${URL}/ships/${ship.id}/status`,
     contentType: 'application/json',
     data: JSON.stringify(data), // access in body
-  }).done(function () {
+  }).done(function (data) {
     console.log('SUCCESS');
-    socket.emit('freeShip', 'testing')
   }).fail(function (msg) {
     console.log('FAIL');
   }).always(function (msg) {
     console.log('ALWAYS');
   });
+  
 })
 
 ////////////////////////////
