@@ -19,34 +19,16 @@ const shipId = url.substr(index + 1)
 //   socket.emit('online', info)
 // })
 
-//////////////////
-let dropdown = $('#locality-dropdown');
-
-dropdown.empty();
-
-dropdown.append('<option selected="true" disabled>CHOOSE SHIP</option>');
-dropdown.prop('selectedIndex', 0);
-
 document.getElementById('stefan').addEventListener('click', () => {
-  // $.ajax({
-  //   url: `${URL}/ships/3/status`,
-  //   type: 'PUT',
-  //   data: JSON.stringify({
-  //     "status": 'TAKEN',
-  //     headers: {
-  //       'Content-Type': 'application/x-www-form-urlencoded'
-  //     }
-  //   }),
-  // });
 
-  jQuery.each( [ "put", "delete" ], function( i, method ) {
-    jQuery[ method ] = function( url, data, callback, type ) {
-      if ( jQuery.isFunction( data ) ) {
+  jQuery.each(["put", "delete"], (i, method) => {
+    jQuery[method] = (url, data, callback, type) => {
+      if (jQuery.isFunction(data)) {
         type = type || callback;
         callback = data;
         data = undefined;
       }
-  
+
       return jQuery.ajax({
         url: url,
         type: method,
@@ -56,10 +38,19 @@ document.getElementById('stefan').addEventListener('click', () => {
       });
     };
   });
-  $.put(`${URL}/ships/3/status`, {status:'AVAILABLE'}, function(result){
-   console.log(result);
+  $.put(`${URL}/ships/3/status`, { status: 'TAKEN' }, (result) => {
+    console.log(result);
+  })
+
 })
-})
+
+//////////////////
+let dropdown = $('#locality-dropdown');
+
+dropdown.empty();
+
+dropdown.append('<option selected="true" disabled>CHOOSE SHIP</option>');
+dropdown.prop('selectedIndex', 0);
 
 
 // Populate dropdown with list of provinces
@@ -69,15 +60,56 @@ $.getJSON(`${URL}/ships?status=AVAILABLE`, (data) => {
   })
 });
 
-$("#locality-dropdown").change(() => {
-  var selectedVal = $("#locality-dropdown option:selected").val();
-  $.get(`${URL}/ships/${selectedVal}`, (info) => {
-    socket.emit('online', info)
-  })
+$("#locality-dropdown").change( () => {
+  var shipId = $("#locality-dropdown option:selected").val();
+
+    jQuery.each(["put", "delete"], (i, method) => {
+      jQuery[method] = (url, data, callback, type) => {
+        if (jQuery.isFunction(data)) {
+          type = type || callback;
+          callback = data;
+          data = undefined;
+        }
+  
+        return jQuery.ajax({
+          url: url,
+          type: method,
+          dataType: type,
+          data: data,
+          success: callback
+        });
+      };
+    });
+    $.put(`${URL}/ships/${shipId}/status`, { status: 'TAKEN' }, (result) => {
+      console.log(result);
+      socket.emit('online', result)
+    })
 })
 ////////////////////////////
 
-socket.on('disconnect', (data) => console.log(data))
+socket.on('disconnect', (ship) => {
+  console.log(ship)
+  // jQuery.each(["put", "delete"], (i, method) => {
+  //   jQuery[method] = (url, data, callback, type) => {
+  //     if (jQuery.isFunction(data)) {
+  //       type = type || callback;
+  //       callback = data;
+  //       data = undefined;
+  //     }
+
+  //     return jQuery.ajax({
+  //       url: url,
+  //       type: method,
+  //       dataType: type,
+  //       data: data,
+  //       success: callback
+  //     });
+  //   };
+  // });
+  // $.put(`${URL}/ships/${ship.id}/status`, { status: 'AVAILABLE' }, (result) => {
+  //   console.log(result);
+  // })
+})
 
 document.getElementById('sendToClient').addEventListener('click', () => {
   const clientIdWithMessage = document.getElementById('message').value

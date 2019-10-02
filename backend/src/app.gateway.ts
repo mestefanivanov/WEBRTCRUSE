@@ -44,8 +44,10 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
   handleDisconnect(client: Socket) {
     this.logger.log(`Client disconnect: ${client.id}`);
     this.roomService.removeShipFromRoom(client.id);
+    const fuckingShip = this.clientService.findShipByClientId(client.id)
     const onlineShips = this.clientService.removeOnlineShip(client.id);
-    client.emit('disconnect', onlineShips);
+    this.logger.log(fuckingShip)
+    this.wss.emit('disconnect', 'onlineShips');
   }
 
   @SubscribeMessage('message')
