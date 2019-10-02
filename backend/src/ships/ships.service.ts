@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { ShipRepository } from './ship.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Ship } from './ship.entity';
@@ -31,6 +31,9 @@ export class ShipsService {
 
     async updateShip(id: number, status: ShipStatus): Promise<Ship> {
         const ship = await this.getShipById(id);
+        if (ship.status === status) {
+            throw new ForbiddenException(`Ship is already ${status}`);
+        }
         ship.status = status;
         await ship.save();
         return ship;

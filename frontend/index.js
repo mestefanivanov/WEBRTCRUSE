@@ -11,129 +11,133 @@ document.getElementById('URL').addEventListener('click', () => {
 //--------------------------------------
 // SECOND DEVICE 
 //--------------------------------------
+
+//testing here
 document.getElementById('stefan').addEventListener('click', () => {
 
-  jQuery.each(["put", "delete"], (i, method) => {
-    jQuery[method] = (url, data, callback, type) => {
-      if (jQuery.isFunction(data)) {
-        type = type || callback;
-        callback = data;
-        data = undefined;
-      }
+  let data = { "status": "TAKEN" }
 
-      return jQuery.ajax({
-        url: url,
-        type: method,
-        dataType: type,
-        data: data,
-        success: callback
-      });
-    };
+  $.ajax({
+    type: 'PUT',
+    url: `${URL}/ships/3/status`,
+    contentType: 'application/json',
+    data: JSON.stringify(data), // access in body
+  }).done(function () {
+    console.log('SUCCESS');
+  }).fail(function (msg) {
+    console.log('FAIL');
+  }).always(function (msg) {
+    console.log('ALWAYS');
   });
-  $.put(`${URL}/ships/3/status`, { status: 'TAKEN' }, (result) => {
-    console.log(result);
-  })
 
 })
 
 //////////////////
-let dropdown = $('#locality-dropdown');
+//TAKING SHIP 
+document.getElementById('select').addEventListener('click', () => {
+  const shipId = document.getElementById('shipId').value
+  let data = { "status": "TAKEN" }
 
-dropdown.empty();
-
-dropdown.append('<option selected="true" disabled>CHOOSE SHIP</option>');
-dropdown.prop('selectedIndex', 0);
-
-
-// Populate dropdown with list of provinces
-$.getJSON(`${URL}/ships?status=AVAILABLE`, (data) => {
-  $.each(data, (key, entry) => {
-    dropdown.append($('<option></option>').attr('value', entry.id).text(entry.name));
-  })
-});
-
-$("#locality-dropdown").change(() => {
-  var shipId = $("#locality-dropdown option:selected").val();
-
-  jQuery.each(["put", "delete"], (i, method) => {
-    jQuery[method] = (url, data, callback, type) => {
-      if (jQuery.isFunction(data)) {
-        type = type || callback;
-        callback = data;
-        data = undefined;
-      }
-
-      return jQuery.ajax({
-        url: url,
-        type: method,
-        dataType: type,
-        data: data,
-        success: callback
-      });
-    };
+  $.ajax({
+    type: 'PUT',
+    url: `${URL}/ships/${shipId}/status`,
+    contentType: 'application/json',
+    data: JSON.stringify(data), // access in body
+  }).done(function (data) {
+    console.log(data)
+    socket.emit('online', data)
+    console.log('SUCCESS');
+  }).fail(function (msg) {
+    console.log('FAIL');
+  }).always(function (msg) {
+    console.log('ALWAYS');
   });
-  $.put(`${URL}/ships/${shipId}/status`, { status: 'TAKEN' }, (result) => {
-    console.log(result);
-    socket.emit('online', result)
+})
+
+//////////////////
+//FREEING SHIP 
+document.getElementById('freeShip').addEventListener('click', () => {
+  const shipId = document.getElementById('offlineShipId').value
+
+  let data = { "status": "AVAILABLE" }
+
+  $.ajax({
+    type: 'PUT',
+    url: `${URL}/ships/${shipId}/status`,
+    contentType: 'application/json',
+    data: JSON.stringify(data), // access in body
+  }).done(function () {
+    console.log('SUCCESS');
+    socket.emit('freeShip', 'testing')
+  }).fail(function (msg) {
+    console.log('FAIL');
+  }).always(function (msg) {
+    console.log('ALWAYS');
+  });
+})
+
+////////////////////////////
+/// SHOW AVAILABLE SHIPS
+document.getElementById('availableShips').addEventListener('click', () => {
+  $.getJSON(`${URL}/ships?status=AVAILABLE`, (data) => {
+    console.log(data)
   })
 })
+
 ////////////////////////////
+/// FIRST ONLINE USER
 socket.on('noOnlineShips', (msg) => {
   $.getJSON(`${URL}/ships?status=TAKEN`, (data) => {
-    console.log(data)
-    jQuery.each(["put", "delete"], (i, method) => {
-      jQuery[method] = (url, data, callback, type) => {
-        if (jQuery.isFunction(data)) {
-          type = type || callback;
-          callback = data;
-          data = undefined;
-        }
 
-        return jQuery.ajax({
-          url: url,
-          type: method,
-          dataType: type,
-          data: data,
-          success: callback
-        });
-      };
-    });
     if (data) {
       $.each(data, (key, entry) => {
         console.log(entry.id)
-        $.put(`${URL}/ships/${entry.id}/status`, { status: 'AVAILABLE' }, (result) => {
-          console.log(result);
-        })
+        let data = { "status": "AVAILABLE" }
+
+        $.ajax({
+          type: 'PUT',
+          url: `${URL}/ships/${entry.id}/status`,
+          contentType: 'application/json',
+          data: JSON.stringify(data), // access in body
+        }).done(function () {
+          console.log('SUCCESS');
+          socket.emit('freeShip', 'testing')
+        }).fail(function (msg) {
+          console.log('FAIL');
+        }).always(function (msg) {
+          console.log('ALWAYS');
+        });
       }
-      )}
+      )
+    }
   })
 })
 
 
+////////////////////////////
+/// WHEN USER DISCONNECT 
 socket.on('disconnect', (ship) => {
   console.log(ship)
-  jQuery.each(["put", "delete"], (i, method) => {
-    jQuery[method] = (url, data, callback, type) => {
-      if (jQuery.isFunction(data)) {
-        type = type || callback;
-        callback = data;
-        data = undefined;
-      }
 
-      return jQuery.ajax({
-        url: url,
-        type: method,
-        dataType: type,
-        data: data,
-        success: callback
-      });
-    };
+  let data = { "status": "AVAILABLE" }
+
+  $.ajax({
+    type: 'PUT',
+    url: `${URL}/ships/${ship.id}/status`,
+    contentType: 'application/json',
+    data: JSON.stringify(data), // access in body
+  }).done(function () {
+    console.log('SUCCESS');
+    socket.emit('freeShip', 'testing')
+  }).fail(function (msg) {
+    console.log('FAIL');
+  }).always(function (msg) {
+    console.log('ALWAYS');
   });
-  $.put(`${URL}/ships/${ship.id}/status`, { status: 'AVAILABLE' }, (result) => {
-    console.log(result);
-  })
 })
 
+////////////////////////////
+/// SENDING PERSONAL MESSAGE 
 document.getElementById('sendToClient').addEventListener('click', () => {
   const clientIdWithMessage = document.getElementById('message').value
   const clientId = clientIdWithMessage.split(',')[0]
@@ -152,16 +156,18 @@ socket.on('recieveMessage', (message) => {
 
 const { initPeer } = require('./peer');
 
-document.getElementById("btn-open-or-join-room").addEventListener("click", () => {
-  const roomId = document.getElementById("room").value
-  socket.emit('joinRoom', roomId)
-});
-
 document.getElementById("btn-leave-room").addEventListener("click", () => {
   const roomId = document.getElementById("room").value
   socket.emit('leaveRoom', roomId)
 });
 
+document.getElementById("btn-open-or-join-room").addEventListener("click", () => {
+  const roomId = document.getElementById("room").value
+  socket.emit('joinRoom', roomId)
+});
+
+////////////////////////////
+/// INITIAL PEER
 socket.on('joinedRoom', async (data) => {
   const room = data.room
   const peer1 = await initPeer(true)
@@ -212,7 +218,8 @@ socket.on('joinedRoom', async (data) => {
     }
   })
 })
-
+////////////////////////////
+/// NON INITIAL PEER
 socket.on('offer', async (data) => {
   const room = data.room
   const peer2 = await initPeer(false)

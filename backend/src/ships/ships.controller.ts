@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe, Query, ValidationPipe, Patch, Body, Put } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query, ValidationPipe, Patch, Body, Put, ForbiddenException } from '@nestjs/common';
 import { ShipsService } from './ships.service';
 import { Ship } from './ship.entity';
 import { GetShipsFilterDto } from './dto/get-ships-fiter.dto';
