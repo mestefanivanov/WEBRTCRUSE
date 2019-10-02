@@ -60,9 +60,34 @@ $.getJSON(`${URL}/ships?status=AVAILABLE`, (data) => {
   })
 });
 
-$("#locality-dropdown").change( () => {
+$("#locality-dropdown").change(() => {
   var shipId = $("#locality-dropdown option:selected").val();
 
+  jQuery.each(["put", "delete"], (i, method) => {
+    jQuery[method] = (url, data, callback, type) => {
+      if (jQuery.isFunction(data)) {
+        type = type || callback;
+        callback = data;
+        data = undefined;
+      }
+
+      return jQuery.ajax({
+        url: url,
+        type: method,
+        dataType: type,
+        data: data,
+        success: callback
+      });
+    };
+  });
+  $.put(`${URL}/ships/${shipId}/status`, { status: 'TAKEN' }, (result) => {
+    console.log(result);
+    socket.emit('online', result)
+  })
+})
+////////////////////////////
+socket.on('noOnlineShips', (msg) => {
+  $.getJSON(`${URL}/ships?status=TAKEN`, (data) => {
     jQuery.each(["put", "delete"], (i, method) => {
       jQuery[method] = (url, data, callback, type) => {
         if (jQuery.isFunction(data)) {
@@ -70,7 +95,7 @@ $("#locality-dropdown").change( () => {
           callback = data;
           data = undefined;
         }
-  
+
         return jQuery.ajax({
           url: url,
           type: method,
@@ -80,35 +105,40 @@ $("#locality-dropdown").change( () => {
         });
       };
     });
-    $.put(`${URL}/ships/${shipId}/status`, { status: 'TAKEN' }, (result) => {
-      console.log(result);
-      socket.emit('online', result)
-    })
+    if (data) {
+      $.each(data, (key, entry) => {
+        console.log(entry.id)
+        $.put(`${URL}/ships/${entry.id}/status`, { status: 'AVAILABLE' }, (result) => {
+          console.log(result);
+        })
+      }
+      )}
+  })
 })
-////////////////////////////
+
 
 socket.on('disconnect', (ship) => {
   console.log(ship)
-  // jQuery.each(["put", "delete"], (i, method) => {
-  //   jQuery[method] = (url, data, callback, type) => {
-  //     if (jQuery.isFunction(data)) {
-  //       type = type || callback;
-  //       callback = data;
-  //       data = undefined;
-  //     }
+  jQuery.each(["put", "delete"], (i, method) => {
+    jQuery[method] = (url, data, callback, type) => {
+      if (jQuery.isFunction(data)) {
+        type = type || callback;
+        callback = data;
+        data = undefined;
+      }
 
-  //     return jQuery.ajax({
-  //       url: url,
-  //       type: method,
-  //       dataType: type,
-  //       data: data,
-  //       success: callback
-  //     });
-  //   };
-  // });
-  // $.put(`${URL}/ships/${ship.id}/status`, { status: 'AVAILABLE' }, (result) => {
-  //   console.log(result);
-  // })
+      return jQuery.ajax({
+        url: url,
+        type: method,
+        dataType: type,
+        data: data,
+        success: callback
+      });
+    };
+  });
+  $.put(`${URL}/ships/${ship.id}/status`, { status: 'AVAILABLE' }, (result) => {
+    console.log(result);
+  })
 })
 
 document.getElementById('sendToClient').addEventListener('click', () => {

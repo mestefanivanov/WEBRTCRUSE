@@ -25,6 +25,10 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
    // --------------------------------------
   handleConnection(client: Socket, ...args: any[]) {
     this.logger.log(`Client* connected: ${client.id}`);
+    const onlineShips = this.clientService.showOnlineShips();
+    if (onlineShips.length === 0) {
+      client.emit('noOnlineShips', 'TODO');
+    }
   }
 
   @SubscribeMessage('online')
@@ -46,8 +50,8 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
     this.roomService.removeShipFromRoom(client.id);
     const fuckingShip = this.clientService.findShipByClientId(client.id)
     const onlineShips = this.clientService.removeOnlineShip(client.id);
-    this.logger.log(fuckingShip)
-    this.wss.emit('disconnect', 'onlineShips');
+    this.logger.log(fuckingShip);
+    this.wss.emit('disconnect', fuckingShip);
   }
 
   @SubscribeMessage('message')
