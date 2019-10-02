@@ -11,14 +11,6 @@ document.getElementById('URL').addEventListener('click', () => {
 //--------------------------------------
 // SECOND DEVICE 
 //--------------------------------------
-const url = window.location.href
-const index = url.indexOf('=')
-const shipId = url.substr(index + 1)
-
-// $.get(`${URL}/ships/${shipId}`, (info) => {
-//   socket.emit('online', info)
-// })
-
 document.getElementById('stefan').addEventListener('click', () => {
 
   jQuery.each(["put", "delete"], (i, method) => {
@@ -88,6 +80,7 @@ $("#locality-dropdown").change(() => {
 ////////////////////////////
 socket.on('noOnlineShips', (msg) => {
   $.getJSON(`${URL}/ships?status=TAKEN`, (data) => {
+    console.log(data)
     jQuery.each(["put", "delete"], (i, method) => {
       jQuery[method] = (url, data, callback, type) => {
         if (jQuery.isFunction(data)) {
