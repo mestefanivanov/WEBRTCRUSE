@@ -12,26 +12,6 @@ document.getElementById('URL').addEventListener('click', () => {
 // SECOND DEVICE 
 //--------------------------------------
 
-//testing here
-document.getElementById('stefan').addEventListener('click', () => {
-
-  let data = { "status": "TAKEN" }
-
-  $.ajax({
-    type: 'PUT',
-    url: `${URL}/ships/3/status`,
-    contentType: 'application/json',
-    data: JSON.stringify(data), // access in body
-  }).done(function () {
-    console.log('SUCCESS');
-  }).fail(function (msg) {
-    console.log('FAIL');
-  }).always(function (msg) {
-    console.log('ALWAYS');
-  });
-
-})
-
 //////////////////
 //TAKING SHIP 
 document.getElementById('select').addEventListener('click', () => {
@@ -44,14 +24,8 @@ document.getElementById('select').addEventListener('click', () => {
     contentType: 'application/json',
     data: JSON.stringify(data), // access in body
   }).done(function (data) {
-    console.log(data)
     socket.emit('online', data)
-    console.log('SUCCESS');
-  }).fail(function (msg) {
-    console.log('FAIL');
-  }).always(function (msg) {
-    console.log('ALWAYS');
-  });
+  })
 })
 
 //////////////////
@@ -67,13 +41,8 @@ document.getElementById('freeShip').addEventListener('click', () => {
     contentType: 'application/json',
     data: JSON.stringify(data), // access in body
   }).done(function () {
-    console.log('SUCCESS');
     socket.emit('freeShip', 'testing')
-  }).fail(function (msg) {
-    console.log('FAIL');
-  }).always(function (msg) {
-    console.log('ALWAYS');
-  });
+  })
 })
 
 ////////////////////////////
@@ -91,7 +60,6 @@ socket.on('noOnlineShips', (msg) => {
 
     if (data) {
       $.each(data, (key, entry) => {
-        console.log(entry.id)
         let data = { "status": "AVAILABLE" }
 
         $.ajax({
@@ -99,13 +67,7 @@ socket.on('noOnlineShips', (msg) => {
           url: `${URL}/ships/${entry.id}/status`,
           contentType: 'application/json',
           data: JSON.stringify(data), // access in body
-        }).done(function () {
-          console.log('SUCCESS');
-        }).fail(function (msg) {
-          console.log('FAIL');
-        }).always(function (msg) {
-          console.log('ALWAYS');
-        });
+        })
       }
       )
     }
@@ -116,8 +78,6 @@ socket.on('noOnlineShips', (msg) => {
 ////////////////////////////
 /// WHEN USER DISCONNECT 
 socket.on('disconnect', (ship) => {
-  console.log(ship)
-
   let data = { "status": "AVAILABLE" }
 
   $.ajax({
@@ -125,14 +85,7 @@ socket.on('disconnect', (ship) => {
     url: `${URL}/ships/${ship.id}/status`,
     contentType: 'application/json',
     data: JSON.stringify(data), // access in body
-  }).done(function (data) {
-    console.log('SUCCESS');
-  }).fail(function (msg) {
-    console.log('FAIL');
-  }).always(function (msg) {
-    console.log('ALWAYS');
-  });
-  
+  })
 })
 
 ////////////////////////////
