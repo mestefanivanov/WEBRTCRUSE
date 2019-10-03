@@ -36,8 +36,8 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
     client: Socket, data: Client) {
     const onlineShip = data;
     onlineShip.client = client.id;
-    this.clientService.addOnlineShip(onlineShip);
-    this.wss.emit('takenShip', 'The ship is taken');
+    const onlineShips = this.clientService.addOnlineShip(onlineShip);
+    this.wss.emit('takenShip', onlineShips);
   }
 
   @SubscribeMessage('showOnlineShips')
@@ -53,13 +53,14 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
     const onlineShips = this.clientService.removeOnlineShip(client.id);
     if (ship) {
       this.wss.emit('disconnect', ship);
+      this.wss.emit('offlineShip', onlineShips);
     }
   }
 
   @SubscribeMessage('freeShip')
   handlefreeingShipMessage(client: Socket, data: string) {
-    this.clientService.removeOnlineShip(client.id);
-    this.wss.emit('takenShip', 'The ship is taken');
+    const onlineShips = this.clientService.removeOnlineShip(client.id);
+    this.wss.emit('takenShip', onlineShips);
   }
 
   @SubscribeMessage('message')

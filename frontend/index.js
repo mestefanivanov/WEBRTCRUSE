@@ -23,14 +23,19 @@ document.getElementById('select').addEventListener('click', () => {
     url: `${URL}/ships/${shipId}/status`,
     contentType: 'application/json',
     data: JSON.stringify(data), // access in body
-  }).done(function (data) {
+  }).done((data) => {
     socket.emit('online', data)
   })
 })
 
 socket.on('takenShip', (msg) => {
   $.getJSON(`${URL}/ships?status=AVAILABLE`, (data) => {
+    console.log('Available ships:')
     console.log(data)
+    console.log('--------------')
+    console.log('Online ships:')
+    console.log(msg)
+    console.log('--------------')
   })
 })
 
@@ -46,17 +51,19 @@ document.getElementById('freeShip').addEventListener('click', () => {
     url: `${URL}/ships/${shipId}/status`,
     contentType: 'application/json',
     data: JSON.stringify(data), // access in body
-  }).done(function () {
+  }).done(() => {
     socket.emit('freeShip', 'testing')
-    // $.getJSON(`${URL}/ships?status=AVAILABLE`, (data) => {
-    //   console.log(data)
-    // })
   })
 })
 
 socket.on('freeingShip', (msg) => {
   $.getJSON(`${URL}/ships?status=AVAILABLE`, (data) => {
+    console.log('Available ships:')
     console.log(data)
+    console.log('--------------')
+    console.log('Online ships:')
+    console.log(msg)
+    console.log('--------------')
   })
 })
 
@@ -64,7 +71,9 @@ socket.on('freeingShip', (msg) => {
 /// SHOW AVAILABLE SHIPS
 document.getElementById('availableShips').addEventListener('click', () => {
   $.getJSON(`${URL}/ships?status=AVAILABLE`, (data) => {
+    console.log('Available ships:')
     console.log(data)
+    console.log('--------------')
   })
 })
 
@@ -102,11 +111,18 @@ socket.on('disconnect', (ship) => {
     data: JSON.stringify(data), // access in body
   }).done(function () {
     $.getJSON(`${URL}/ships?status=AVAILABLE`, (data) => {
+      console.log('Available ships:')
       console.log(data)
+      console.log('--------------')
     })
   })
 })
 
+socket.on('offlineShip', (msg) => {
+  console.log('Online ships:')
+  console.log(msg)
+  console.log('--------------')
+})
 ////////////////////////////
 /// SENDING PERSONAL MESSAGE 
 document.getElementById('sendToClient').addEventListener('click', () => {
@@ -167,7 +183,13 @@ socket.on('joinedRoom', async (data) => {
 
     document.getElementById('mute').addEventListener('click', () => {
       const streamToSend = peer1.stream.id
-      peer1.send(streamToSend)
+      const data = { streamToSend: streamToSend, event: 'mute' }
+      peer1.send(data)
+    })
+    document.getElementById('unmute').addEventListener('click', () => {
+      const streamToSend = peer1.stream.id
+      const data = { streamToSend: streamToSend, event: 'unmute' }
+      peer1.send(data)
     })
   })
   // Sending messages betweeen peers
@@ -177,14 +199,19 @@ socket.on('joinedRoom', async (data) => {
     peer1.send(yourMessage)
   })
 
+
   peer1.on('data', (data) => {
     const streamToMute = STREAM.find(obj => {
-      return obj.id === data
+      return obj.id === data.streamToSend
     })
 
-    if (streamToMute) {
-      streamToMute.getAudioTracks()[0].enabled = !streamToMute.getAudioTracks()[0].enabled;
-    } else {
+    if (streamToMute && data.event === "mute") {
+      streamToMute.getAudioTracks()[0].enabled = false;
+    }
+    if (streamToMute && data.event === "unmute") {
+      streamToMute.getAudioTracks()[0].enabled = true;
+    } 
+    if(!streamToMute) {
       document.getElementById('messages').textContent += data + '\n'
     }
   })
@@ -215,7 +242,13 @@ socket.on('offer', async (data) => {
 
     document.getElementById('mute').addEventListener('click', () => {
       const streamToSend = peer2.stream.id
-      peer2.send(streamToSend)
+      const data = { streamToSend: streamToSend, event: 'mute' }
+      peer2.send(data)
+    })
+    document.getElementById('unmute').addEventListener('click', () => {
+      const streamToSend = peer2.stream.id
+      const data = { streamToSend: streamToSend, event: 'unmute' }
+      peer2.send(data)
     })
   })
 
@@ -228,18 +261,26 @@ socket.on('offer', async (data) => {
 
   peer2.on('data', (data) => {
     const streamToMute = STREAM.find(obj => {
-      return obj.id === data
+      return obj.id === data.streamToSend
     })
 
-    if (streamToMute) {
-      streamToMute.getAudioTracks()[0].enabled = !streamToMute.getAudioTracks()[0].enabled;
-    } else {
+    if (streamToMute && data.event === "mute") {
+      streamToMute.getAudioTracks()[0].enabled = false;
+    }
+    if (streamToMute && data.event === "unmute") {
+      streamToMute.getAudioTracks()[0].enabled = true;
+    } 
+    if (!streamToMute) {
       document.getElementById('messages').textContent += data + '\n'
     }
   })
 })
 
-socket.on('onlineShips', (data) => console.log(data))
+socket.on('onlineShips', (data) => {
+  console.log('Online ships:')
+  console.log(data)
+  console.log('--------------')
+})
 
 document.getElementById("btn-show-online-ships").addEventListener("click", () => {
   socket.emit('showOnlineShips', 'testing')
