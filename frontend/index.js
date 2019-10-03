@@ -210,8 +210,8 @@ socket.on('joinedRoom', async (data) => {
     }
     if (streamToMute && data.event === "unmute") {
       streamToMute.getAudioTracks()[0].enabled = true;
-    } 
-    if(!streamToMute) {
+    }
+    if (!streamToMute) {
       document.getElementById('messages').textContent += data + '\n'
     }
   })
@@ -269,7 +269,7 @@ socket.on('offer', async (data) => {
     }
     if (streamToMute && data.event === "unmute") {
       streamToMute.getAudioTracks()[0].enabled = true;
-    } 
+    }
     if (!streamToMute) {
       document.getElementById('messages').textContent += data + '\n'
     }
