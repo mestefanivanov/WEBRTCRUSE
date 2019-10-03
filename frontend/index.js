@@ -25,9 +25,6 @@ document.getElementById('select').addEventListener('click', () => {
     data: JSON.stringify(data), // access in body
   }).done(function (data) {
     socket.emit('online', data)
-    // $.getJSON(`${URL}/ships?status=AVAILABLE`, (data) => {
-    //   console.log(data)
-    // })
   })
 })
 
@@ -51,9 +48,15 @@ document.getElementById('freeShip').addEventListener('click', () => {
     data: JSON.stringify(data), // access in body
   }).done(function () {
     socket.emit('freeShip', 'testing')
-    $.getJSON(`${URL}/ships?status=AVAILABLE`, (data) => {
-      console.log(data)
-    })
+    // $.getJSON(`${URL}/ships?status=AVAILABLE`, (data) => {
+    //   console.log(data)
+    // })
+  })
+})
+
+socket.on('freeingShip', (msg) => {
+  $.getJSON(`${URL}/ships?status=AVAILABLE`, (data) => {
+    console.log(data)
   })
 })
 

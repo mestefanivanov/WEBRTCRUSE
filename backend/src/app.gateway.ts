@@ -59,6 +59,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayDisconnect {
   @SubscribeMessage('freeShip')
   handlefreeingShipMessage(client: Socket, data: string) {
     this.clientService.removeOnlineShip(client.id);
+    this.wss.emit('takenShip', 'The ship is taken');
   }
 
   @SubscribeMessage('message')
