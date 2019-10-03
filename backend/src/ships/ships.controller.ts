@@ -3,6 +3,7 @@ import { ShipsService } from './ships.service';
 import { Ship } from './ship.entity';
 import { GetShipsFilterDto } from './dto/get-ships-fiter.dto';
 import { ShipStatus } from './ship-status';
+import { ShipStatusValidationPipe } from './dto/ship.status.validation-pipe';
 
 @Controller('ships')
 export class ShipsController {
@@ -21,7 +22,7 @@ export class ShipsController {
     @Put('/:id/status')
     updateShip(
         @Param('id', ParseIntPipe) id: number,
-        @Body('status') IsAvailable: ShipStatus,
+        @Body('status', ShipStatusValidationPipe) IsAvailable: ShipStatus,
         ): Promise<Ship> {
         return this.shipsService.updateShip(id, IsAvailable);
     }
