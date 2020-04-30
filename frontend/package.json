@@ -14,7 +14,7 @@
   "dependencies": {
     "get-user-media-promise": "^1.1.4",
     "getusermedia": "^1.3.5",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "simple-peer": "^5.11.4",
     "wrtc": "^0.4.1"
   }
